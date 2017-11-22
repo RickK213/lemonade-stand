@@ -8,5 +8,17 @@ namespace LemonadeStand
 {
     class Player
     {
+        //member variables
+        Inventory inventory;
+        double money; 
+
+        //constructor
+        public Player()
+        {
+            money = 20.00;
+        }
+
+        //member methods
+
     }
 }

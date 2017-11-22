@@ -6,24 +6,17 @@ using System.Threading.Tasks;
 
 namespace LemonadeStand
 {
-    public class Game
+    class PaperCup
     {
         //member variables
-        int numDaysInGame;
-        Day day;
+        string name = "Paper Cup";
 
         //constructor
-        public Game()
+        public PaperCup()
         {
-
+            
         }
-
         //member methods
-        public void RunGame()
-        {
-            UI.ResizeConsoleWindow();
-            UI.DisplayIntroScreen();
-        }
 
     }
 }
