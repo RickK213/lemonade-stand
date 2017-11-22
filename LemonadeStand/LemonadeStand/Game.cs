@@ -6,7 +6,22 @@ using System.Threading.Tasks;
 
 namespace LemonadeStand
 {
-    class Game
+    public class Game
     {
+        //member variables
+
+        //constructor
+        public Game()
+        {
+
+        }
+
+        //member methods
+        public void RunGame()
+        {
+            UI.ResizeConsoleWindow();
+            UI.DisplayIntroScreen();
+        }
+
     }
 }
