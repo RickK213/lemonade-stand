@@ -119,6 +119,7 @@ namespace LemonadeStand
                 Console.ResetColor();
                 return GetValidUserOption(instruction, validOptions);
             }
+            Console.WriteLine();
             return userInput;
         }
     }

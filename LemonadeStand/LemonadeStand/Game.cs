@@ -19,12 +19,15 @@ namespace LemonadeStand
         public Game()
         {
             ui = new UserInterface();
+            players = new List<Player>();
         }
 
         //member methods
         void SetUpGame()
         {
-            Console.WriteLine("Let's set up the game!");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("LET'S SET UP SOME GAME OPTIONS!\n");
+            Console.ResetColor();
             numPlayers = int.Parse(ui.GetValidUserOption("How many players?", new List<string>() { "1", "2" }));
             numDaysInGame = int.Parse(ui.GetValidUserOption("How many days would you like to play for?", new List<string>() { "7", "14", "30" }));
         }
@@ -33,8 +36,11 @@ namespace LemonadeStand
         {
             for (int i=0; i<numPlayers; i++)
             {
-                Player player = new Player();
+                Console.WriteLine("Enter a name for Player " + (i + 1) );
+                string playerName = Console.ReadLine();
+                Player player = new Player(playerName);
                 players.Add(player);
+                Console.WriteLine();
             }
         }
 

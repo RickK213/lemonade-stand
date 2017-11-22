@@ -6,15 +6,17 @@ using System.Threading.Tasks;
 
 namespace LemonadeStand
 {
-    class Player
+    public class Player
     {
         //member variables
         Inventory inventory;
-        double money; 
+        double money;
+        string name;
 
         //constructor
-        public Player()
+        public Player(string name)
         {
+            this.name = name;
             money = 20.00;
         }
 
