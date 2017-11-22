@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LemonadeStand
 {
-    public static class UI
+    public class UserInterface
     {
         // You have 7, 14, or 21 days to make as much money as possible, and you’ve decided to open a lemonade stand! You’ll have complete control over your business, including pricing, quality control, inventory control, and purchasing supplies.Buy your ingredients, set your recipe, and start selling!
         // The first thing you’ll have to worry about is your recipe. At first, go with the default recipe, but try to experiment a little bit and see if you can find a better one. Make sure you buy enough of all your ingredients, or you won’t be able to sell!
@@ -20,7 +20,7 @@ namespace LemonadeStand
 
 
         //member methods
-        static void DisplayTitle()
+        void DisplayTitle()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(@"                      WELCOME TO:");
@@ -41,7 +41,7 @@ namespace LemonadeStand
             Console.ResetColor();
         }
 
-        static void DisplayInstructions()
+        void DisplayInstructions()
         {
             Console.WriteLine("\nYou have 7, 14, or 21 days to make as much money as possible, and you’ve decided");
             Console.WriteLine("to open a lemonade stand! You’ll have complete control over your business,");
@@ -66,22 +66,60 @@ namespace LemonadeStand
             Console.WriteLine("Play again, and try to beat your high score!");
         }
 
-        public static void GetAnyKeyToContinue(string nextAction)
+        public void GetAnyKeyToContinue(string nextAction, bool doClearAfter)
         {
             Console.WriteLine("\nPress any key to {0}.", nextAction);
             Console.ReadKey();
+            if (doClearAfter)
+            {
+                Console.Clear();
+            }
         }
 
-        public static void DisplayIntroScreen()
+        public void DisplayIntroScreen()
         {
+            ResizeConsoleWindow();
             DisplayTitle();
             DisplayInstructions();
-            GetAnyKeyToContinue("start playing");
+            GetAnyKeyToContinue("start playing", true);
         }
 
-        public static void ResizeConsoleWindow()
+        void ResizeConsoleWindow()
         {
             Console.SetWindowSize(Console.LargestWindowWidth-120, Console.LargestWindowHeight-15);
+        }
+
+        void DisplayValidOptions(List<string> validOptions)
+        {
+            Console.Write("Enter ");
+            for (int i = 0; i < validOptions.Count; i++)
+            {
+                Console.Write("'");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write(validOptions[i]);
+                Console.ResetColor();
+                Console.Write("'");
+                if (i < validOptions.Count - 1)
+                {
+                    Console.Write(" or ");
+                }
+            }
+            Console.WriteLine();
+        }
+
+        public string GetValidUserOption(string instruction, List<string> validOptions)
+        {
+            Console.WriteLine(instruction);
+            DisplayValidOptions(validOptions);
+            string userInput = Console.ReadLine();
+            if (!validOptions.Contains(userInput))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("'{0}' is an invalid option. Please read the instructions.", userInput);
+                Console.ResetColor();
+                return GetValidUserOption(instruction, validOptions);
+            }
+            return userInput;
         }
     }
 }
