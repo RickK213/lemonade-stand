@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LemonadeStand
 {
-    public class UserInterface
+    public static class UI
     {
         // You have 7, 14, or 21 days to make as much money as possible, and you’ve decided to open a lemonade stand! You’ll have complete control over your business, including pricing, quality control, inventory control, and purchasing supplies.Buy your ingredients, set your recipe, and start selling!
         // The first thing you’ll have to worry about is your recipe. At first, go with the default recipe, but try to experiment a little bit and see if you can find a better one. Make sure you buy enough of all your ingredients, or you won’t be able to sell!
@@ -14,13 +14,13 @@ namespace LemonadeStand
         //The other major factor which comes into play is your customer’s satisfaction. As you sell your lemonade, people will decide how much they like or dislike it.  This will make your business more or less popular.If your popularity is low, fewer people will want to buy your lemonade, even if the weather is hot and sunny.But if you’re popularity is high, you’ll do okay, even on a rainy day!
         //At the end of 7, 14, or 21 days you’ll see how much money you made.Play again, and try to beat your high score!
 
-        
-        //member variables
 
+        //member variables
+        public static Random random = new Random();
 
 
         //member methods
-        void DisplayTitle()
+        public static void DisplayTitle()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(@"                      WELCOME TO:");
@@ -41,7 +41,7 @@ namespace LemonadeStand
             Console.ResetColor();
         }
 
-        void DisplayInstructions()
+        public static void DisplayInstructions()
         {
             Console.WriteLine("\nYou have 7, 14, or 21 days to make as much money as possible, and you’ve decided");
             Console.WriteLine("to open a lemonade stand! You’ll have complete control over your business,");
@@ -66,7 +66,7 @@ namespace LemonadeStand
             Console.WriteLine("Play again, and try to beat your high score!");
         }
 
-        public void GetAnyKeyToContinue(string nextAction, bool doClearAfter)
+        public static void GetAnyKeyToContinue(string nextAction, bool doClearAfter)
         {
             Console.WriteLine("\nPress any key to {0}.", nextAction);
             Console.ReadKey();
@@ -76,7 +76,7 @@ namespace LemonadeStand
             }
         }
 
-        public void DisplayIntroScreen()
+        public static void DisplayIntroScreen()
         {
             ResizeConsoleWindow();
             DisplayTitle();
@@ -84,30 +84,34 @@ namespace LemonadeStand
             GetAnyKeyToContinue("start playing", true);
         }
 
-        void ResizeConsoleWindow()
+        public static void ResizeConsoleWindow()
         {
             Console.SetWindowSize(Console.LargestWindowWidth-120, Console.LargestWindowHeight-15);
         }
 
-        void DisplayValidOptions(List<string> validOptions)
+        public static void DisplayValidOptions(List<string> validOptions)
         {
             Console.Write("Enter ");
             for (int i = 0; i < validOptions.Count; i++)
             {
+                if (i == validOptions.Count - 1)
+                {
+                    Console.Write(" or ");
+                }
                 Console.Write("'");
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write(validOptions[i]);
                 Console.ResetColor();
                 Console.Write("'");
-                if (i < validOptions.Count - 1)
+                if (i < validOptions.Count - 2)
                 {
-                    Console.Write(" or ");
+                    Console.Write(", ");
                 }
             }
             Console.WriteLine();
         }
 
-        public string GetValidUserOption(string instruction, List<string> validOptions)
+        public static string GetValidUserOption(string instruction, List<string> validOptions)
         {
             Console.WriteLine(instruction);
             DisplayValidOptions(validOptions);
@@ -122,5 +126,91 @@ namespace LemonadeStand
             Console.WriteLine();
             return userInput;
         }
+
+        public static void DisplayPlayerInventory(Player player, int currentDay, Day day)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("{0} - PURCHASE YOUR INVENTORY", player.name);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\nCurrent Inventory=============================");
+            Console.ResetColor();
+            Console.WriteLine("{0} Paper Cups", player.inventory.paperCups.Count);
+            Console.WriteLine("{0} Lemons", player.inventory.lemons.Count);
+            Console.WriteLine("{0} Cups of Sugar", player.inventory.cupsOfSugar.Count);
+            Console.WriteLine("{0} Ice Cubes", player.inventory.iceCubes.Count);
+            DisplayDailyInfo(currentDay, day, player);
+            Console.WriteLine();
+        }
+
+        public static void DisplayMenuHeader()
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\nMenu Options==================================");
+            Console.ResetColor();
+        }
+        public static void DisplayDailyInfo(int currentDay, Day day, Player player)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\nDaily Information=============================");
+            Console.ResetColor();
+            Console.WriteLine("Day: {0}", currentDay);
+            Console.WriteLine("Money: ${0}", player.money);
+            Console.WriteLine("Current High Temperature: {0}", day.weather.highTemp);
+            Console.WriteLine("Current Forecast: {0}", day.weather.forecast);
+        }
+
+        public static void DisplayPurchaseOptions( Supply supply)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("Acquisition: {0}\n", supply.pluralName);
+            Console.ResetColor();
+            Console.WriteLine("You can buy:");
+            Console.WriteLine("1: {0} {1} for ${2}", supply.bundle1.quantity, supply.pluralName, supply.bundle1.price);
+            Console.WriteLine("2: {0} {1} for ${2}", supply.bundle2.quantity, supply.pluralName, supply.bundle2.price);
+            Console.WriteLine("3: {0} {1} for ${2}", supply.bundle3.quantity, supply.pluralName, supply.bundle3.price);
+        }
+
+        public static SupplyBundle GetSupplyBundle(int supplyBundleChoice)
+        {
+            Supply supply = new Supply();
+
+            switch (supplyBundleChoice)
+            {
+                case 1:
+                    supply = new PaperCup();
+                    break;
+                case 2:
+                    supply = new Lemon();
+                    break;
+                case 3:
+                    supply = new CupOfSugar();
+                    break;
+                case 4:
+                    supply = new IceCube();
+                    break;
+                default:
+                    break;
+            }
+
+            DisplayPurchaseOptions(supply);
+
+            int bundleSelection = int.Parse(UI.GetValidUserOption("", new List<string>() { "1", "2", "3" }));
+
+            if ( bundleSelection == 1 )
+            {
+                return supply.bundle1;
+            }
+            else if (bundleSelection == 2)
+            {
+                return supply.bundle2;
+            }
+            else
+            {
+                return supply.bundle3;
+            }
+        }
+
     }
 }

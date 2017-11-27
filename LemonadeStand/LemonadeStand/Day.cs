@@ -6,7 +6,18 @@ using System.Threading.Tasks;
 
 namespace LemonadeStand
 {
-    class Day
+    public class Day
     {
+        //member varialbes
+        public Weather weather;
+
+        //constructor
+        public Day()
+        {
+            weather = new Weather();
+        }
+
+        //member methods
+
     }
 }

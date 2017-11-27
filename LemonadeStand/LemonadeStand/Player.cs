@@ -9,15 +9,19 @@ namespace LemonadeStand
     public class Player
     {
         //member variables
-        Inventory inventory;
-        double money;
-        string name;
+        public Inventory inventory;
+        public double startingMoney = 20.00;
+        public double money;
+        public string name;
+        public double popularity;
 
         //constructor
         public Player(string name)
         {
             this.name = name;
-            money = 20.00;
+            money = startingMoney;
+            inventory = new Inventory();
+            popularity = .50;
         }
 
         //member methods
