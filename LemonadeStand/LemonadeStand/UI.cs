@@ -155,25 +155,27 @@ namespace LemonadeStand
             Console.WriteLine("\nDaily Information=============================");
             Console.ResetColor();
             Console.WriteLine("Day: {0}", currentDay);
-            Console.WriteLine("Money: ${0}", player.money);
-            Console.WriteLine("Current High Temperature: {0}", day.weather.highTemp);
-            Console.WriteLine("Current Forecast: {0}", day.weather.forecast);
+            Console.WriteLine("Money: {0:C2}", player.money);
+            Console.WriteLine("High Temperature: {0}°", day.weather.highTemp);
+            Console.WriteLine("Weather Forecast: {0}", day.weather.forecast);
         }
 
-        public static void DisplayPurchaseOptions( Supply supply)
+        public static void DisplayPurchaseOptions(Supply supply)
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("Acquisition: {0}\n", supply.pluralName);
             Console.ResetColor();
             Console.WriteLine("You can buy:");
-            Console.WriteLine("1: {0} {1} for ${2}", supply.bundle1.quantity, supply.pluralName, supply.bundle1.price);
-            Console.WriteLine("2: {0} {1} for ${2}", supply.bundle2.quantity, supply.pluralName, supply.bundle2.price);
-            Console.WriteLine("3: {0} {1} for ${2}", supply.bundle3.quantity, supply.pluralName, supply.bundle3.price);
+            Console.WriteLine("1: {0} {1} for {2:C2}", supply.bundle1.quantity, supply.pluralName, supply.bundle1.price);
+            Console.WriteLine("2: {0} {1} for {2:C2}", supply.bundle2.quantity, supply.pluralName, supply.bundle2.price);
+            Console.WriteLine("3: {0} {1} for {2:C2}", supply.bundle3.quantity, supply.pluralName, supply.bundle3.price);
         }
 
-        public static SupplyBundle GetSupplyBundle(int supplyBundleChoice)
+        public static SupplyBundle GetSupplyBundle(int supplyBundleChoice, Player player)
         {
+            SupplyBundle chosenBundle;
+
             Supply supply = new Supply();
 
             switch (supplyBundleChoice)
@@ -200,16 +202,36 @@ namespace LemonadeStand
 
             if ( bundleSelection == 1 )
             {
-                return supply.bundle1;
+                chosenBundle = supply.bundle1;
             }
             else if (bundleSelection == 2)
             {
-                return supply.bundle2;
+                chosenBundle = supply.bundle2;
             }
             else
             {
-                return supply.bundle3;
+                chosenBundle = supply.bundle3;
             }
+
+            if (player.money<chosenBundle.price)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Sorry, you don't have enough money to make this purchase.");
+                Console.ResetColor();
+                GetAnyKeyToContinue("continue", false);
+                return GetSupplyBundle(supplyBundleChoice, player);
+            }
+
+            return chosenBundle;
+
+        }
+
+        public static void DisplayBankruptMessage()
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("You don't have enough money to buy the cheapest supply.");
+            Console.ResetColor();
+            GetAnyKeyToContinue("set your recipe", false);
         }
 
     }

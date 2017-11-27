@@ -13,11 +13,13 @@ namespace LemonadeStand
         int numPlayers;
         Day day;
         List<Player> players;
+        List<Supply> gameSupplies;
 
         //constructor
         public Game()
         {
             players = new List<Player>();
+            gameSupplies = new List<Supply>() { new PaperCup(), new Lemon(), new CupOfSugar(), new IceCube() };
         }
 
         //member methods
@@ -44,27 +46,45 @@ namespace LemonadeStand
 
         void AddBundleToPlayerInventory(Player player, SupplyBundle supplyBundle)
         {
-            player.money -= supplyBundle.price;
+            player.money = Math.Round( (player.money-supplyBundle.price), 2);
             for (int i=0; i<supplyBundle.quantity; i++)
             {
-                if (supplyBundle.supply.name == "Paper Cup")
+                switch(supplyBundle.supply.name)
                 {
-                    player.inventory.paperCups.Add(supplyBundle.supply);
+                    case "Paper Cup":
+                        player.inventory.paperCups.Add(supplyBundle.supply);
+                        break;
+                    case "Lemon":
+                        player.inventory.lemons.Add(supplyBundle.supply);
+                        break;
+                    case "Cup of Sugar":
+                        player.inventory.cupsOfSugar.Add(supplyBundle.supply);
+                        break;
+                    case "Ice Cube":
+                        player.inventory.iceCubes.Add(supplyBundle.supply);
+                        break;
                 }
-                else if (supplyBundle.supply.name == "Lemon")
-                {
-                    player.inventory.lemons.Add(supplyBundle.supply);
-                }
-                else if (supplyBundle.supply.name == "Cup of Sugar")
-                {
-                    player.inventory.cupsOfSugar.Add(supplyBundle.supply);
-                }
-                else if (supplyBundle.supply.name == "Ice Cubes")
-                {
-                    player.inventory.iceCubes.Add(supplyBundle.supply);
-                }
-
             }
+        }
+
+        double GetCheapestBundle(Supply supply)
+        {
+            List<double> bundlePrices = new List<double>();
+            bundlePrices.Add(supply.bundle1.price);
+            bundlePrices.Sort();
+            return bundlePrices[0];
+        }
+
+        double GetCheapestSupplyBundle()
+        {
+            List<double> cheapestBundles = new List<double>();
+            foreach ( Supply supply in gameSupplies )
+            {
+                double cheapestBundle = GetCheapestBundle(supply);
+                cheapestBundles.Add(cheapestBundle);
+            }
+            cheapestBundles.Sort();
+            return cheapestBundles[0];
         }
 
         public void RunGame()
@@ -76,29 +96,35 @@ namespace LemonadeStand
             for (int i=0; i<numDaysInGame; i++)
             {
                 //every day:
-                //display day number and current money
                 int currentDay = i + 1;
                 day = new Day();
                 foreach (Player player in players)
                 {
                     int inventoryPurchaseChoice = 0;
-                    while (inventoryPurchaseChoice !=5)
+                    double cheapestSupplyBundle = GetCheapestSupplyBundle();
+
+                    //purchase loop
+                    while ( (inventoryPurchaseChoice !=5) && (player.money>cheapestSupplyBundle) )
                     {
                         UI.DisplayPlayerInventory(player, currentDay, day);
                         UI.DisplayMenuHeader();
-                        inventoryPurchaseChoice = int.Parse(UI.GetValidUserOption("1: Buy Paper Cups\n2: Buy Lemons\n3: Buy Cups of Sugar\n4: Buy Ice Cubes\n5: Done purchasing - Set my recipe!", new List<string>() { "1", "2", "3", "4", "5" }));
+                        inventoryPurchaseChoice = int.Parse(UI.GetValidUserOption("1: Buy Paper Cups\n2: Buy Lemons\n3: Buy Cups of Sugar\n4: Buy Ice Cubes\n5: Done purchasing - Set my recipe!\n", new List<string>() { "1", "2", "3", "4", "5" }));
                         if (inventoryPurchaseChoice != 5)
                         {
-                            SupplyBundle supplyBundle = UI.GetSupplyBundle(inventoryPurchaseChoice);
+                            SupplyBundle supplyBundle = UI.GetSupplyBundle(inventoryPurchaseChoice, player);
                             AddBundleToPlayerInventory(player, supplyBundle);
-                            Console.WriteLine("You Selected:");
-                            Console.WriteLine("{0} {1} for ${2}", supplyBundle.quantity, supplyBundle.supply.pluralName, supplyBundle.price);
                         }
                     }
-                    Console.WriteLine("You're done purchasing, yo.");
+                    if ( player.money<cheapestSupplyBundle )
+                    {
+                        UI.DisplayPlayerInventory(player, currentDay, day);
+                        UI.DisplayBankruptMessage();
+                    }
+                    //Set Daily Recipe
+                    Console.Clear();
+                    Console.WriteLine("Set your recipe.");
+
                 }
-                //display high temperature (50-95 degrees) & rain forecast
-                //each player buys inventory
                 //each player sets price/quality control
                 //run day:
                 //inventory losses - some lemons spoil and all ice melts
