@@ -26,6 +26,10 @@ namespace LemonadeStand
         public decimal maxSugarPerPitcher;
         public decimal minIcePerCup;
         public decimal maxIcePerCup;
+        decimal numberOfVariableBreaks;
+        int temperatureMultiplier;
+        int forecastMultiplier;
+        int priceMultiplier;
         public Random random;
 
         //constructor
@@ -45,11 +49,15 @@ namespace LemonadeStand
             maxSugarPerPitcher = 20;
             minIcePerCup = 0;
             maxIcePerCup = 10;
+            numberOfVariableBreaks = 4;
+            temperatureMultiplier = 10;
+            forecastMultiplier = 7;
+            priceMultiplier = 13;
             random = new Random();
-    }
+        }
 
-    //member methods
-    void SetUpGame()
+        //member methods
+        void SetUpGame()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("LET'S SET UP SOME GAME OPTIONS!\n");
@@ -153,7 +161,6 @@ namespace LemonadeStand
                     break;
                 default:
                     break;
-
             }
         }
 
@@ -173,53 +180,120 @@ namespace LemonadeStand
             }
         }
 
-        int GetNumberOfCustomers()
+        decimal AdjustMinBasedOnTemp(decimal dailyMinNumberOfCustomers, decimal numberOfSpans)
         {
-            decimal dailyMinNumberOfCustomers = minNumberOfCustomers;
-            decimal dailyMaxNumberOfCustomers = maxNumberOfCustomers;
-            decimal numberOfSpans = 4;
-
-            //To determine Max/Min number of customers:
-            //1. Temperature determines initial max/min - DONE
-            //2. High price lowers max/min, Low Price raises max/min
-            //3. Bad forecast lowers max/min, Good forecast raises max/min
-            //4. Randomize number of customers based on max/min
-
-            decimal customerNumberSpan = (maxNumberOfCustomers - minNumberOfCustomers) / numberOfSpans;
             decimal temperatureSpan = (maxTemperature - minTemperature) / numberOfSpans;
-            decimal priceSpan = (maxLemonadePrice - minLemonadePrice) / numberOfSpans;
+            if ((day.weather.highTemp >= minTemperature + temperatureSpan * 2) && (day.weather.highTemp < minTemperature + temperatureSpan * 3))
+            {
+                dailyMinNumberOfCustomers += temperatureMultiplier;
+            }
+            else if (day.weather.highTemp >= minTemperature + temperatureSpan * 3)
+            {
+                dailyMinNumberOfCustomers += temperatureMultiplier * 2;
+            }
 
+            return dailyMinNumberOfCustomers;
+        }
+
+        decimal AdjustMinBasedOnPrice(decimal dailyMinNumberOfCustomers, decimal numberOfSpans, Player player)
+        {
+            decimal priceSpan = (maxLemonadePrice - minLemonadePrice) / numberOfSpans;
+            if ((player.recipe.pricePerCup >= minLemonadePrice) && (player.recipe.pricePerCup < minLemonadePrice + priceSpan))
+            {
+                dailyMinNumberOfCustomers += priceMultiplier * 2;
+            }
+            else if ( (player.recipe.pricePerCup >= minLemonadePrice + priceSpan) && (player.recipe.pricePerCup < minLemonadePrice + priceSpan*2) )
+            {
+                dailyMinNumberOfCustomers += priceMultiplier;
+            }
+
+            return dailyMinNumberOfCustomers;
+        }
+
+        decimal AdjustMinBasedOnForecast(decimal dailyMinNumberOfCustomers)
+        {
+
+            if ( day.weather.forecast == "Overcast" )
+            {
+                dailyMinNumberOfCustomers += forecastMultiplier;
+            }
+            else if ( day.weather.forecast == "Sunny & Clear" )
+            {
+                dailyMinNumberOfCustomers += forecastMultiplier * 2;
+            }
+
+            return dailyMinNumberOfCustomers;
+        }
+
+        decimal AdjustMaxBasedOnTemp(decimal dailyMaxNumberOfCustomers, decimal numberOfSpans)
+        {
+            decimal temperatureSpan = (maxTemperature - minTemperature) / numberOfSpans;
             if (day.weather.highTemp < minTemperature + temperatureSpan)
             {
-                dailyMaxNumberOfCustomers -= customerNumberSpan * 3;
+                dailyMaxNumberOfCustomers -= temperatureMultiplier * 2;
             }
             else if ((day.weather.highTemp >= minTemperature + temperatureSpan) && (day.weather.highTemp < minTemperature + temperatureSpan * 2))
             {
-                dailyMaxNumberOfCustomers -= customerNumberSpan * 2;
-            }
-            else if ((day.weather.highTemp >= minTemperature + temperatureSpan * 2) && (day.weather.highTemp < minTemperature + temperatureSpan * 3))
-            {
-                dailyMinNumberOfCustomers += customerNumberSpan * 2;
-            }
-            else
-            {
-                dailyMinNumberOfCustomers += customerNumberSpan * 3;
+                dailyMaxNumberOfCustomers -= temperatureMultiplier;
             }
 
-            Console.WriteLine("minimum number of customers: {0}", dailyMinNumberOfCustomers);
-            Console.WriteLine("maximum number of customers: {0}", dailyMaxNumberOfCustomers);
-            Console.ReadKey();
+            return dailyMaxNumberOfCustomers;
+        }
+
+        decimal AdjustMaxBasedOnPrice(decimal dailyMaxNumberOfCustomers, decimal numberOfSpans, Player player)
+        {
+            decimal priceSpan = (maxLemonadePrice - minLemonadePrice) / numberOfSpans;
+            if (player.recipe.pricePerCup > minLemonadePrice + priceSpan * 3)
+            {
+                dailyMaxNumberOfCustomers -= priceMultiplier * 2;
+            }
+            else if ( (player.recipe.pricePerCup >= minLemonadePrice + priceSpan * 2) && (player.recipe.pricePerCup <= minLemonadePrice + priceSpan * 3)  )
+            {
+                dailyMaxNumberOfCustomers -= priceMultiplier;
+            }
+
+            return dailyMaxNumberOfCustomers;
+        }
+
+        decimal AdjustMaxBasedOnForecast(decimal dailyMaxNumberOfCustomers)
+        {
+
+            if (day.weather.forecast == "Cloudy")
+            {
+                dailyMaxNumberOfCustomers -= forecastMultiplier;
+            }
+            else if (day.weather.forecast == "Rainy")
+            {
+                dailyMaxNumberOfCustomers -= forecastMultiplier * 2;
+            }
+
+            return dailyMaxNumberOfCustomers;
+        }
+
+        int GetNumberOfCustomers(Player player)
+        {
+            decimal dailyMinNumberOfCustomers = minNumberOfCustomers;
+            decimal dailyMaxNumberOfCustomers = maxNumberOfCustomers;
+
+            dailyMinNumberOfCustomers = AdjustMinBasedOnTemp(dailyMinNumberOfCustomers, numberOfVariableBreaks);
+            dailyMaxNumberOfCustomers = AdjustMaxBasedOnTemp(dailyMaxNumberOfCustomers, numberOfVariableBreaks);
+
+            dailyMinNumberOfCustomers = AdjustMinBasedOnForecast(dailyMinNumberOfCustomers);
+            dailyMaxNumberOfCustomers = AdjustMaxBasedOnForecast(dailyMaxNumberOfCustomers);
+
+            dailyMinNumberOfCustomers = AdjustMinBasedOnPrice(dailyMinNumberOfCustomers, numberOfVariableBreaks, player);
+            dailyMaxNumberOfCustomers = AdjustMaxBasedOnPrice(dailyMaxNumberOfCustomers, numberOfVariableBreaks, player);
 
             return random.Next(Decimal.ToInt32(dailyMinNumberOfCustomers), Decimal.ToInt32(dailyMaxNumberOfCustomers + 1));
 
 
         }
 
-        void RunDailyLemonadeStand(Player player, Day day)
+        void RunDailyLemonadeStand(Player player)
         {
             player.dailyProfit = 0;
             List<Customer> customers = new List<Customer>();
-            int numberOfCustomers = GetNumberOfCustomers();
+            int numberOfCustomers = GetNumberOfCustomers(player);
 
 
             //run day:
@@ -246,7 +320,7 @@ namespace LemonadeStand
                 {
                     MakePlayerPurchases(player, currentDay);
                     SetPlayerRecipe(player, currentDay);
-                    RunDailyLemonadeStand(player, day);
+                    RunDailyLemonadeStand(player);
                     //end of day report
                 }
             }
