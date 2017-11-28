@@ -36,23 +36,25 @@ namespace LemonadeStand
         public Game()
         {
             players = new List<Player>();
+            //TO DO: rewrite the below line. It's bad to create objects you don't plan on using
             gameSupplies = new List<Supply>() { new PaperCup(), new Lemon(), new CupOfSugar(), new IceCube() };
             minTemperature = 50;
             maxTemperature = 100;
             minNumberOfCustomers = 10;
             maxNumberOfCustomers = 100;
             minLemonadePrice = 1;
-            maxLemonadePrice = 100;
-            minLemonsPerPitcher = 1;
+            maxLemonadePrice = 99;
+            minLemonsPerPitcher = 0;
             minLemonsPerPitcher = 20;
             minSugarPerPitcher = 0;
             maxSugarPerPitcher = 20;
             minIcePerCup = 0;
             maxIcePerCup = 10;
             numberOfVariableBreaks = 4;
-            temperatureMultiplier = 10;
-            forecastMultiplier = 7;
-            priceMultiplier = 13;
+            //The multipliers below allow the developer to weigh the effect of Temperature, Forecast & Price on The Number of Customers to Generate
+            temperatureMultiplier = 13;
+            forecastMultiplier = 8;
+            priceMultiplier = 10;
             random = new Random();
         }
 
@@ -272,6 +274,7 @@ namespace LemonadeStand
 
         int GetNumberOfCustomers(Player player)
         {
+            //TO DO: add in player popularity as a determining factor for number of customers
             decimal dailyMinNumberOfCustomers = minNumberOfCustomers;
             decimal dailyMaxNumberOfCustomers = maxNumberOfCustomers;
 
@@ -285,8 +288,6 @@ namespace LemonadeStand
             dailyMaxNumberOfCustomers = AdjustMaxBasedOnPrice(dailyMaxNumberOfCustomers, numberOfVariableBreaks, player);
 
             return random.Next(Decimal.ToInt32(dailyMinNumberOfCustomers), Decimal.ToInt32(dailyMaxNumberOfCustomers + 1));
-
-
         }
 
         void RunDailyLemonadeStand(Player player)
@@ -294,11 +295,13 @@ namespace LemonadeStand
             player.dailyProfit = 0;
             List<Customer> customers = new List<Customer>();
             int numberOfCustomers = GetNumberOfCustomers(player);
-
+            for ( int i=0; i<numberOfCustomers; i++ )
+            {
+                customers.Add( new Customer() );
+            }
 
             //run day:
-            //get number of total customers - random dependent on price, weather and popularity
-            //If the weather is bad, and your price is high, don't expect too many (maybe 15-25).  But if the weather is hot and clear, and your prices are reasonable, you can expect about 50-75 customers.
+            //DONE - get number of total customers - random dependent on price, weather and popularity
             //get number of customers that purchase - random dependent on customer satisfaction
             //get number of satisfied customers - dependent on price, recipe
             //calculate overall popularity based on the day's customer satisfaction

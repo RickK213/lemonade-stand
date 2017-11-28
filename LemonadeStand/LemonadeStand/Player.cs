@@ -25,7 +25,6 @@ namespace LemonadeStand
             inventory = new Inventory();
             recipe = new Recipe();
             popularity = .50;
-            dailyProfit = 0;
 
         }
 

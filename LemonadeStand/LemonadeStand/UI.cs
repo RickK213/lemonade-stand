@@ -139,7 +139,6 @@ namespace LemonadeStand
             Console.WriteLine("{0} Cups of Sugar", player.inventory.cupsOfSugar.Count);
             Console.WriteLine("{0} Ice Cubes", player.inventory.iceCubes.Count);
             DisplayDailyInfo(currentDay, day, player);
-            Console.WriteLine();
         }
 
         public static void DisplayPlayerRecipe(Player player, int currentDay, Day day)
@@ -148,7 +147,7 @@ namespace LemonadeStand
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("{0} - SET YOUR PRICE AND RECIPE", player.name);
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("\nCurrent Recipe================================");
+            Console.WriteLine("\nCurrent Price/Recipe==========================");
             Console.ResetColor();
             Console.WriteLine("     Price per Cup: {0} Cents", player.recipe.pricePerCup);
             Console.WriteLine("Lemons per Pitcher: {0} Lemons", player.recipe.lemonsPerPitcher);
@@ -156,12 +155,11 @@ namespace LemonadeStand
             Console.WriteLine("       Ice per Cup: {0} Cubes", player.recipe.icePerCup);
             Console.ResetColor();
             DisplayDailyInfo(currentDay, day, player);
-            Console.WriteLine();
         }
 
         public static void DisplayMenuHeader()
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nMenu Options==================================");
             Console.ResetColor();
         }
