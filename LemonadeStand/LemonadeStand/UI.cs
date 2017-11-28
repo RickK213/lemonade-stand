@@ -16,7 +16,6 @@ namespace LemonadeStand
 
 
         //member variables
-        public static Random random = new Random();
 
 
         //member methods
@@ -143,6 +142,23 @@ namespace LemonadeStand
             Console.WriteLine();
         }
 
+        public static void DisplayPlayerRecipe(Player player, int currentDay, Day day)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("{0} - SET YOUR PRICE AND RECIPE", player.name);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\nCurrent Recipe================================");
+            Console.ResetColor();
+            Console.WriteLine("     Price per Cup: {0} Cents", player.recipe.pricePerCup);
+            Console.WriteLine("Lemons per Pitcher: {0} Lemons", player.recipe.lemonsPerPitcher);
+            Console.WriteLine(" Sugar per Pitcher: {0} Cups", player.recipe.sugarPerPitcher);
+            Console.WriteLine("       Ice per Cup: {0} Cubes", player.recipe.icePerCup);
+            Console.ResetColor();
+            DisplayDailyInfo(currentDay, day, player);
+            Console.WriteLine();
+        }
+
         public static void DisplayMenuHeader()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -224,6 +240,46 @@ namespace LemonadeStand
 
             return chosenBundle;
 
+        }
+
+        public static int GetUserIntegerInRange(string instruction, int min, int max)
+        {
+            Console.WriteLine(instruction);
+            string userSelection = Console.ReadLine();
+            int userSelectionNumber;
+            if (!int.TryParse(userSelection, out userSelectionNumber) || !(userSelectionNumber >= min) || !(userSelectionNumber <= max))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Sorry, that is not a valid number. Please enter a number between {0} and {1}.", min, max);
+                Console.ResetColor();
+                return GetUserIntegerInRange(instruction, min, max);
+            }
+            else
+            {
+                return userSelectionNumber;
+            }
+        }
+
+        public static int GetRecipeValue(int menuSelection, Player player, Game game)
+        {
+        Console.Clear();
+            switch (menuSelection)
+            {
+                case 1:
+                    Console.WriteLine("Your current Price per Cup is {0} Cents.", player.recipe.pricePerCup);
+                    return GetUserIntegerInRange("Enter your new Price per Cup in Cents (1-100):", Decimal.ToInt32(game.minLemonadePrice), Decimal.ToInt32(game.maxLemonadePrice));
+                case 2:
+                    Console.WriteLine("Your current Lemons per Pitcher is {0} Lemons.", player.recipe.lemonsPerPitcher);
+                    return GetUserIntegerInRange("Enter your new Lemons per Pitcher (1-20):", Decimal.ToInt32(game.minLemonsPerPitcher), Decimal.ToInt32(game.maxLemonsPerPitcher));
+                case 3:
+                    Console.WriteLine("Your current Sugar per Pitcher is {0} Cups.", player.recipe.sugarPerPitcher);
+                    return GetUserIntegerInRange("Enter your new cups of Sugar per Pitcher (0-20):", Decimal.ToInt32(game.minSugarPerPitcher), Decimal.ToInt32(game.maxSugarPerPitcher));
+                case 4:
+                    Console.WriteLine("Your current Ice per Cup is {0} Cubes.", player.recipe.icePerCup);
+                    return GetUserIntegerInRange("Enter your new cubes of Ice per Cup (0-10):", Decimal.ToInt32(game.minIcePerCup), Decimal.ToInt32(game.maxIcePerCup));
+                default:
+                    return 0;
+            }
         }
 
         public static void DisplayBankruptMessage()

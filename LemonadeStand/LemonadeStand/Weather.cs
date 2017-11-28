@@ -10,14 +10,14 @@ namespace LemonadeStand
     {
         //member variables
         public int highTemp;
-        public List<string> forecastVariables = new List<string>() { "Sunny & Clear", "Hazy", "Overcast", "Cloudy", "Rainy" };
+        public List<string> forecastVariables = new List<string>() { "Sunny & Clear", "Overcast", "Cloudy", "Rainy" };
         public string forecast;
         
         //constructor
-        public Weather()
+        public Weather(Game game)
         {
-            highTemp = UI.random.Next(50,95);
-            int forecastIndex = UI.random.Next(0,forecastVariables.Count);
+            highTemp = game.random.Next(Decimal.ToInt32(game.minTemperature), Decimal.ToInt32(game.maxTemperature+1));
+            int forecastIndex = game.random.Next(0,forecastVariables.Count);
             forecast = forecastVariables[forecastIndex];
         }
 

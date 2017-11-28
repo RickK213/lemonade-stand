@@ -12,9 +12,9 @@ namespace LemonadeStand
         public Weather weather;
 
         //constructor
-        public Day()
+        public Day(Game game)
         {
-            weather = new Weather();
+            weather = new Weather(game);
         }
 
         //member methods

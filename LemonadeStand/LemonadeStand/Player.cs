@@ -10,10 +10,12 @@ namespace LemonadeStand
     {
         //member variables
         public Inventory inventory;
+        public Recipe recipe;
         public double startingMoney = 20.00;
         public double money;
         public string name;
         public double popularity;
+        public double dailyProfit;
 
         //constructor
         public Player(string name)
@@ -21,7 +23,10 @@ namespace LemonadeStand
             this.name = name;
             money = startingMoney;
             inventory = new Inventory();
+            recipe = new Recipe();
             popularity = .50;
+            dailyProfit = 0;
+
         }
 
         //member methods
