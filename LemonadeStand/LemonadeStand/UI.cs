@@ -16,6 +16,7 @@ namespace LemonadeStand
 
 
         //member variables
+        //DON'T WRITE ANY MEMBER VARIABLES!! STATIC CLASSES SHOULD NOT HAVE MEMBER VARIABLES!!!
 
 
         //member methods
@@ -186,19 +187,20 @@ namespace LemonadeStand
             Console.WriteLine("3: {0} {1} for {2:C2}", supply.bundle3.quantity, supply.pluralName, supply.bundle3.price);
         }
 
-        public static SupplyBundle GetSupplyBundle(int supplyBundleChoice, Player player)
+        public static SupplyBundle GetSupplyBundle(int supplyBundleChoice, Player player, Random random)
         {
             SupplyBundle chosenBundle;
 
             Supply supply = new Supply();
 
+            //TO DO: Figure out a better way to do the below stuff. It's bad to create objects you don't need.
             switch (supplyBundleChoice)
             {
                 case 1:
                     supply = new PaperCup();
                     break;
                 case 2:
-                    supply = new Lemon();
+                    supply = new Lemon(random);
                     break;
                 case 3:
                     supply = new CupOfSugar();
@@ -233,7 +235,7 @@ namespace LemonadeStand
                 Console.WriteLine("Sorry, you don't have enough money to make this purchase.");
                 Console.ResetColor();
                 GetAnyKeyToContinue("continue", false);
-                return GetSupplyBundle(supplyBundleChoice, player);
+                return GetSupplyBundle(supplyBundleChoice, player, random);
             }
 
             return chosenBundle;
@@ -286,6 +288,41 @@ namespace LemonadeStand
             Console.WriteLine("You don't have enough money to buy the cheapest supply.");
             Console.ResetColor();
             GetAnyKeyToContinue("set your recipe", false);
+        }
+        
+        public static void DisplayDailyReport(Player player, int currentDay, Day day, int numberOfPurchases, int numberOfCustomers)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\nEnd of Day Report=============================");
+            Console.ResetColor();
+            Console.WriteLine($"You managed to sell {numberOfPurchases} cups of lemonade to {numberOfCustomers} potential customers.");
+            Console.WriteLine("Daily Profit: {0:C2}", player.dailyProfit);
+            Console.WriteLine("Total Profit: {0:C2}", player.totalProfit);
+            DisplayDailyInfo(currentDay, day, player);
+            GetAnyKeyToContinue("view your inventory losses", true);
+
+        }
+
+        public static void DisplayDailyLosses(int numberOfIceCubesLost, int numberOfLemonsLost, int cupsOfSugarLost, int currentDay)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\nInventory Losses==============================");
+            Console.ForegroundColor = ConsoleColor.Red;
+            if (numberOfIceCubesLost > 0)
+            {
+                Console.WriteLine($"Your remaining ice has melted. You lost {numberOfIceCubesLost} cubes.");
+            }
+            if (numberOfLemonsLost > 0)
+            {
+                Console.WriteLine($"{numberOfLemonsLost} of your remaining lemons spoiled.");
+            }
+            if (cupsOfSugarLost > 0)
+            {
+                Console.WriteLine($"You got bugs in your sugar! You lost {cupsOfSugarLost} cups of sugar.");
+            }
+            Console.ResetColor();
+            GetAnyKeyToContinue("play day " + (currentDay + 1), true);
         }
 
     }

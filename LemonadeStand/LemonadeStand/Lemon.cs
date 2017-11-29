@@ -9,9 +9,10 @@ namespace LemonadeStand
     public class Lemon : Supply
     {
         //member variables
+        public int daysUntilSpoiled;
 
         //constructor
-        public Lemon()
+        public Lemon(Random random)
         {
             name = "Lemon";
             pluralName = "Lemons";
@@ -21,6 +22,7 @@ namespace LemonadeStand
             supplyBundles.Add(bundle1);
             supplyBundles.Add(bundle2);
             supplyBundles.Add(bundle3);
+            daysUntilSpoiled = random.Next(2, 6);
         }
 
         //member methods

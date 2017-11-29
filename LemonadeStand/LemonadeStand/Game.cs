@@ -30,14 +30,17 @@ namespace LemonadeStand
         int temperatureMultiplier;
         int forecastMultiplier;
         int priceMultiplier;
+        int cupsPerPitcher;
+        int currentDay;
         public Random random;
 
         //constructor
         public Game()
         {
+            random = new Random();
             players = new List<Player>();
             //TO DO: rewrite the below line. It's bad to create objects you don't plan on using
-            gameSupplies = new List<Supply>() { new PaperCup(), new Lemon(), new CupOfSugar(), new IceCube() };
+            gameSupplies = new List<Supply>() { new PaperCup(), new Lemon(random), new CupOfSugar(), new IceCube() };
             minTemperature = 50;
             maxTemperature = 100;
             minNumberOfCustomers = 10;
@@ -55,7 +58,7 @@ namespace LemonadeStand
             temperatureMultiplier = 13;
             forecastMultiplier = 8;
             priceMultiplier = 10;
-            random = new Random();
+            cupsPerPitcher = 8;
         }
 
         //member methods
@@ -82,8 +85,9 @@ namespace LemonadeStand
 
         void AddBundleToPlayerInventory(Player player, SupplyBundle supplyBundle)
         {
-            player.money = Math.Round( (player.money-supplyBundle.price), 2);
-            player.dailyExpenses += supplyBundle.price;
+            player.money = Math.Round((player.money - supplyBundle.price), 2);
+            player.dailyExpenses = Math.Round((player.dailyExpenses + supplyBundle.price), 2);
+            player.totalExpenses = Math.Round((player.totalExpenses + supplyBundle.price), 2);
             for (int i=0; i<supplyBundle.quantity; i++)
             {
                 switch(supplyBundle.supply.name)
@@ -92,7 +96,7 @@ namespace LemonadeStand
                         player.inventory.paperCups.Add(supplyBundle.supply);
                         break;
                     case "Lemon":
-                        player.inventory.lemons.Add(supplyBundle.supply);
+                        player.inventory.lemons.Add(new Lemon(random) );
                         break;
                     case "Cup of Sugar":
                         player.inventory.cupsOfSugar.Add(supplyBundle.supply);
@@ -135,7 +139,7 @@ namespace LemonadeStand
                 menuSelection = int.Parse(UI.GetValidUserOption("1: Buy Paper Cups\n2: Buy Lemons\n3: Buy Cups of Sugar\n4: Buy Ice Cubes\n5: Done purchasing - Set my recipe!\n", new List<string>() { "1", "2", "3", "4", "5" }));
                 if (menuSelection != 5)
                 {
-                    SupplyBundle supplyBundle = UI.GetSupplyBundle(menuSelection, player);
+                    SupplyBundle supplyBundle = UI.GetSupplyBundle(menuSelection, player, random);
                     AddBundleToPlayerInventory(player, supplyBundle);
                 }
             }
@@ -303,22 +307,70 @@ namespace LemonadeStand
 
             foreach ( Customer customer in customers )
             {
+                bool soldOut = player.checkForSoldOut(cupsPerPitcher);
+                if (!soldOut) {
+                    if (customer.MakesPurchase(minLemonadePrice, maxLemonadePrice, minTemperature, maxTemperature, day.weather.highTemp, player.recipe.pricePerCup))
+                    {
+                        numberOfPurchases++;
+                        double moneyMade = (double)Decimal.Divide(player.recipe.pricePerCup, 100);
+                        player.money += moneyMade;
+                        player.dailyIncome += moneyMade;
+                        player.totalIncome += moneyMade;
 
-                if (customer.MakesPurchase(minLemonadePrice, maxLemonadePrice, minTemperature, maxTemperature, day.weather.highTemp, player.recipe.pricePerCup ) )
-                {
-                    numberOfPurchases++;
-                    double moneyMade = (double)Decimal.Divide(player.recipe.pricePerCup, 100);
-                    player.money += moneyMade;
-                    player.dailyIncome += moneyMade;
+                        int lemonsUsed = player.recipe.lemonsPerPitcher / cupsPerPitcher;
+                        player.inventory.lemons.RemoveRange(0, lemonsUsed);
+
+                        player.inventory.paperCups.RemoveAt(0);
+
+                        int cupsOfSugarUsed = player.recipe.sugarPerPitcher / cupsPerPitcher;
+                        player.inventory.cupsOfSugar.RemoveRange(0, cupsOfSugarUsed);
+
+                        int iceCubesUsed = player.recipe.icePerCup;
+                        player.inventory.iceCubes.RemoveRange(0, iceCubesUsed);
+
+                    }
                 }
             }
-            Console.WriteLine("Number of customers: {0}", numberOfCustomers);
-            Console.WriteLine("Number of purchases: {0}", numberOfPurchases);
-            Console.ReadKey();
+
+            player.dailyProfit = player.dailyIncome - player.dailyExpenses;
+            player.totalProfit = player.totalIncome - player.totalExpenses;
+            UI.DisplayDailyReport(player, currentDay, day, numberOfPurchases, numberOfCustomers);
+
+            //inventory losses
+            //TO DO: calculate lost value
+            int numberOfIceCubesLost = player.inventory.iceCubes.Count;
+            player.inventory.iceCubes.Clear();
+
+            foreach (Lemon lemon in player.inventory.lemons)
+            {
+                lemon.daysUntilSpoiled--;
+            }
+
+            int numberOfLemonsLost = 0;
+            for (int i=0; i<player.inventory.lemons.Count; i++)
+            {
+                Lemon currentLemon = (Lemon)player.inventory.lemons[i];
+                if (currentLemon.daysUntilSpoiled == 0)
+                {
+                    numberOfLemonsLost++;
+                    player.inventory.lemons.RemoveAt(i);
+                }
+            }
+
+            int cupsOfSugarLost = 0;
+            int chanceOfBugsInSugar = random.Next(1,9);
+            if (chanceOfBugsInSugar == 1)
+            {
+                cupsOfSugarLost = player.inventory.cupsOfSugar.Count;
+                player.inventory.cupsOfSugar.Clear();
+            }
+
+            UI.DisplayDailyLosses(numberOfIceCubesLost, numberOfLemonsLost, cupsOfSugarLost, currentDay);
+
 
             //run day:
             //DONE - get number of total customers - random dependent on price, weather and popularity
-            //get number of customers that purchase - random dependent on customer satisfaction
+            //DONE - get number of customers that purchase - random dependent on customer satisfaction
             //get number of satisfied customers - dependent on price, recipe
             //calculate overall popularity based on the day's customer satisfaction
             //inventory losses - some lemons spoil and all ice melts
@@ -333,7 +385,7 @@ namespace LemonadeStand
             for (int i=0; i<numDaysInGame; i++)
             {
                 //every day:
-                int currentDay = i + 1;
+                currentDay = i + 1;
                 day = new Day(this);
                 foreach (Player player in players)
                 {
