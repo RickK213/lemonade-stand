@@ -11,15 +11,15 @@ namespace LemonadeStand
         //member variables
         int numDaysInGame;
         int numPlayers;
-        Day day;
+        public Day day;
         List<Player> players;
         List<Supply> gameSupplies;
         public decimal minTemperature;
         public decimal maxTemperature;
         decimal minNumberOfCustomers;
         decimal maxNumberOfCustomers;
-        public decimal minLemonadePrice;
-        public decimal maxLemonadePrice;
+        public int minLemonadePrice;
+        public int maxLemonadePrice;
         public decimal minLemonsPerPitcher;
         public decimal maxLemonsPerPitcher;
         public decimal minSugarPerPitcher;
@@ -182,9 +182,9 @@ namespace LemonadeStand
             }
         }
 
-        decimal AdjustMinBasedOnTemp(decimal dailyMinNumberOfCustomers, decimal numberOfSpans)
+        decimal AdjustMinBasedOnTemp(decimal dailyMinNumberOfCustomers, decimal numberOfVariableBreaks)
         {
-            decimal temperatureSpan = (maxTemperature - minTemperature) / numberOfSpans;
+            decimal temperatureSpan = (maxTemperature - minTemperature) / numberOfVariableBreaks;
             if ((day.weather.highTemp >= minTemperature + temperatureSpan * 2) && (day.weather.highTemp < minTemperature + temperatureSpan * 3))
             {
                 dailyMinNumberOfCustomers += temperatureMultiplier;
@@ -197,9 +197,9 @@ namespace LemonadeStand
             return dailyMinNumberOfCustomers;
         }
 
-        decimal AdjustMinBasedOnPrice(decimal dailyMinNumberOfCustomers, decimal numberOfSpans, Player player)
+        decimal AdjustMinBasedOnPrice(decimal dailyMinNumberOfCustomers, decimal numberOfVariableBreaks, Player player)
         {
-            decimal priceSpan = (maxLemonadePrice - minLemonadePrice) / numberOfSpans;
+            decimal priceSpan = (maxLemonadePrice - minLemonadePrice) / numberOfVariableBreaks;
             if ((player.recipe.pricePerCup >= minLemonadePrice) && (player.recipe.pricePerCup < minLemonadePrice + priceSpan))
             {
                 dailyMinNumberOfCustomers += priceMultiplier * 2;
@@ -227,9 +227,9 @@ namespace LemonadeStand
             return dailyMinNumberOfCustomers;
         }
 
-        decimal AdjustMaxBasedOnTemp(decimal dailyMaxNumberOfCustomers, decimal numberOfSpans)
+        decimal AdjustMaxBasedOnTemp(decimal dailyMaxNumberOfCustomers, decimal numberOfVariableBreaks)
         {
-            decimal temperatureSpan = (maxTemperature - minTemperature) / numberOfSpans;
+            decimal temperatureSpan = (maxTemperature - minTemperature) / numberOfVariableBreaks;
             if (day.weather.highTemp < minTemperature + temperatureSpan)
             {
                 dailyMaxNumberOfCustomers -= temperatureMultiplier * 2;
@@ -242,10 +242,10 @@ namespace LemonadeStand
             return dailyMaxNumberOfCustomers;
         }
 
-        decimal AdjustMaxBasedOnPrice(decimal dailyMaxNumberOfCustomers, decimal numberOfSpans, Player player)
+        decimal AdjustMaxBasedOnPrice(decimal dailyMaxNumberOfCustomers, decimal numberOfVariableBreaks, Player player)
         {
-            decimal priceSpan = (maxLemonadePrice - minLemonadePrice) / numberOfSpans;
-            if (player.recipe.pricePerCup > minLemonadePrice + priceSpan * 3)
+            decimal priceSpan = (maxLemonadePrice - minLemonadePrice) / numberOfVariableBreaks;
+            if ((decimal)player.recipe.pricePerCup > minLemonadePrice + priceSpan * 3)
             {
                 dailyMaxNumberOfCustomers -= priceMultiplier * 2;
             }
@@ -295,10 +295,25 @@ namespace LemonadeStand
             player.dailyProfit = 0;
             List<Customer> customers = new List<Customer>();
             int numberOfCustomers = GetNumberOfCustomers(player);
+            int numberOfPurchases = 0;
             for ( int i=0; i<numberOfCustomers; i++ )
             {
-                customers.Add( new Customer() );
+                customers.Add( new Customer(this, player) );
             }
+
+            foreach ( Customer customer in customers )
+            {
+                if ( customer.MakesPurchase() )
+                {
+                    numberOfPurchases++;
+                    double moneyMade = (double)Decimal.Divide(player.recipe.pricePerCup, 100);
+                    player.money += moneyMade;
+                    player.dailyProfit += moneyMade;
+                }
+            }
+            Console.WriteLine("Number of customers: {0}", numberOfCustomers);
+            Console.WriteLine("Number of purchases: {0}", numberOfPurchases);
+            Console.ReadKey();
 
             //run day:
             //DONE - get number of total customers - random dependent on price, weather and popularity
