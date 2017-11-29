@@ -11,29 +11,51 @@ namespace LemonadeStand
         //member variables
         Game game;
         Player player;
+        int priceSensitivity;
+        int temperatureSensitivity;
+        int lemonadeSensitivity;
+        bool isPriceSensitive;
+        bool isTemperatureSensitive;
+        bool lovesLemonade;
 
         //constructor
         public Customer(Game game, Player player)
         {
             this.game = game;
             this.player = player;
+            priceSensitivity = game.random.Next(1,3);
+            if(priceSensitivity == 1)
+            {
+                isPriceSensitive = true;
+            }
+            temperatureSensitivity = game.random.Next(1,3);
+            if (temperatureSensitivity == 1)
+            {
+                isTemperatureSensitive = true;
+            }
+            lemonadeSensitivity = game.random.Next(1, 9);
+            if (lemonadeSensitivity == 1)
+            {
+                lovesLemonade = true;
+            }
+
         }
 
         //member methods
         public bool MakesPurchase()
         {
-            int minRange = 0;
-            int maxRange = 8;
-            if ( game.day.weather.highTemp > (game.maxTemperature-game.minTemperature/2 + game.minTemperature) )
+            int bottomTierOfPrice = ((game.maxLemonadePrice - game.minLemonadePrice) / 3) + game.minLemonadePrice;
+            decimal topTierOfTemperature = game.maxTemperature - ((game.maxTemperature - game.minTemperature) / 3);
+
+            if ((game.day.weather.highTemp > topTierOfTemperature) && isTemperatureSensitive)
             {
-                maxRange -= 2;
+                return true;
             }
-            if ( player.recipe.pricePerCup < (game.maxLemonadePrice-game.minLemonadePrice/2 + game.minLemonadePrice) )
+            else if ((player.recipe.pricePerCup < bottomTierOfPrice) && isPriceSensitive)
             {
-                maxRange -= 2;
+                return true;
             }
-            int doesPurchase = game.random.Next(minRange,maxRange);
-            if ( doesPurchase == 1 )
+            else if (lovesLemonade)
             {
                 return true;
             }

@@ -265,16 +265,16 @@ namespace LemonadeStand
             {
                 case 1:
                     Console.WriteLine("Your current Price per Cup is {0} Cents.", player.recipe.pricePerCup);
-                    return GetUserIntegerInRange("Enter your new Price per Cup in Cents (1-100):", Decimal.ToInt32(game.minLemonadePrice), Decimal.ToInt32(game.maxLemonadePrice));
+                    return GetUserIntegerInRange("Enter your new Price per Cup in Cents (" + game.minLemonadePrice + "-" + game.maxLemonadePrice + "):", Decimal.ToInt32(game.minLemonadePrice), Decimal.ToInt32(game.maxLemonadePrice));
                 case 2:
                     Console.WriteLine("Your current Lemons per Pitcher is {0} Lemons.", player.recipe.lemonsPerPitcher);
-                    return GetUserIntegerInRange("Enter your new Lemons per Pitcher (1-20):", Decimal.ToInt32(game.minLemonsPerPitcher), Decimal.ToInt32(game.maxLemonsPerPitcher));
+                    return GetUserIntegerInRange("Enter your new Lemons per Pitcher (" + game.minLemonsPerPitcher + "-" + game.maxLemonsPerPitcher + "):", Decimal.ToInt32(game.minLemonsPerPitcher), Decimal.ToInt32(game.maxLemonsPerPitcher));
                 case 3:
                     Console.WriteLine("Your current Sugar per Pitcher is {0} Cups.", player.recipe.sugarPerPitcher);
-                    return GetUserIntegerInRange("Enter your new cups of Sugar per Pitcher (0-20):", Decimal.ToInt32(game.minSugarPerPitcher), Decimal.ToInt32(game.maxSugarPerPitcher));
+                    return GetUserIntegerInRange("Enter your new cups of Sugar per Pitcher (" + game.minSugarPerPitcher + "-" + game.maxSugarPerPitcher + "):", Decimal.ToInt32(game.minSugarPerPitcher), Decimal.ToInt32(game.maxSugarPerPitcher));
                 case 4:
                     Console.WriteLine("Your current Ice per Cup is {0} Cubes.", player.recipe.icePerCup);
-                    return GetUserIntegerInRange("Enter your new cubes of Ice per Cup (0-10):", Decimal.ToInt32(game.minIcePerCup), Decimal.ToInt32(game.maxIcePerCup));
+                    return GetUserIntegerInRange("Enter your new cubes of Ice per Cup (" + game.minIcePerCup + "-" + game.maxIcePerCup + "):", Decimal.ToInt32(game.minIcePerCup), Decimal.ToInt32(game.maxIcePerCup));
                 default:
                     return 0;
             }
