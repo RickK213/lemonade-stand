@@ -83,6 +83,7 @@ namespace LemonadeStand
         void AddBundleToPlayerInventory(Player player, SupplyBundle supplyBundle)
         {
             player.money = Math.Round( (player.money-supplyBundle.price), 2);
+            player.dailyExpenses += supplyBundle.price;
             for (int i=0; i<supplyBundle.quantity; i++)
             {
                 switch(supplyBundle.supply.name)
@@ -292,7 +293,6 @@ namespace LemonadeStand
 
         void RunDailyLemonadeStand(Player player)
         {
-            player.dailyIncome = 0;
             List<Customer> customers = new List<Customer>();
             int numberOfCustomers = GetNumberOfCustomers(player);
             int numberOfPurchases = 0;
@@ -337,6 +337,8 @@ namespace LemonadeStand
                 day = new Day(this);
                 foreach (Player player in players)
                 {
+                    player.dailyIncome = 0;
+                    player.dailyExpenses = 0;
                     MakePlayerPurchases(player, currentDay);
                     SetPlayerRecipe(player, currentDay);
                     RunDailyLemonadeStand(player);
