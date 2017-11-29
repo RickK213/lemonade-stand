@@ -292,23 +292,24 @@ namespace LemonadeStand
 
         void RunDailyLemonadeStand(Player player)
         {
-            player.dailyProfit = 0;
+            player.dailyIncome = 0;
             List<Customer> customers = new List<Customer>();
             int numberOfCustomers = GetNumberOfCustomers(player);
             int numberOfPurchases = 0;
             for ( int i=0; i<numberOfCustomers; i++ )
             {
-                customers.Add( new Customer(this, player) );
+                customers.Add( new Customer(random) );
             }
 
             foreach ( Customer customer in customers )
             {
-                if ( customer.MakesPurchase() )
+
+                if (customer.MakesPurchase(minLemonadePrice, maxLemonadePrice, minTemperature, maxTemperature, day.weather.highTemp, player.recipe.pricePerCup ) )
                 {
                     numberOfPurchases++;
                     double moneyMade = (double)Decimal.Divide(player.recipe.pricePerCup, 100);
                     player.money += moneyMade;
-                    player.dailyProfit += moneyMade;
+                    player.dailyIncome += moneyMade;
                 }
             }
             Console.WriteLine("Number of customers: {0}", numberOfCustomers);

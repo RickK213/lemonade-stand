@@ -9,8 +9,6 @@ namespace LemonadeStand
     class Customer
     {
         //member variables
-        Game game;
-        Player player;
         int priceSensitivity;
         int temperatureSensitivity;
         int lemonadeSensitivity;
@@ -19,39 +17,36 @@ namespace LemonadeStand
         bool lovesLemonade;
 
         //constructor
-        public Customer(Game game, Player player)
+        public Customer(Random random)
         {
-            this.game = game;
-            this.player = player;
-            priceSensitivity = game.random.Next(1,3);
+            priceSensitivity = random.Next(1,3);
             if(priceSensitivity == 1)
             {
                 isPriceSensitive = true;
             }
-            temperatureSensitivity = game.random.Next(1,3);
+            temperatureSensitivity = random.Next(1,3);
             if (temperatureSensitivity == 1)
             {
                 isTemperatureSensitive = true;
             }
-            lemonadeSensitivity = game.random.Next(1, 9);
+            lemonadeSensitivity = random.Next(1, 9);
             if (lemonadeSensitivity == 1)
             {
                 lovesLemonade = true;
             }
-
         }
 
         //member methods
-        public bool MakesPurchase()
+        public bool MakesPurchase(int minLemonadePrice, int maxLemonadePrice, decimal minTemperature, decimal maxTemperature, int highTemp, int pricePerCup)
         {
-            int bottomTierOfPrice = ((game.maxLemonadePrice - game.minLemonadePrice) / 3) + game.minLemonadePrice;
-            decimal topTierOfTemperature = game.maxTemperature - ((game.maxTemperature - game.minTemperature) / 3);
+            int bottomTierOfPrice = ((maxLemonadePrice - minLemonadePrice) / 3) + minLemonadePrice;
+            decimal topTierOfTemperature = maxTemperature - ((maxTemperature - minTemperature) / 3);
 
-            if ((game.day.weather.highTemp > topTierOfTemperature) && isTemperatureSensitive)
+            if ((highTemp > topTierOfTemperature) && isTemperatureSensitive)
             {
                 return true;
             }
-            else if ((player.recipe.pricePerCup < bottomTierOfPrice) && isPriceSensitive)
+            else if ((pricePerCup < bottomTierOfPrice) && isPriceSensitive)
             {
                 return true;
             }

@@ -15,7 +15,8 @@ namespace LemonadeStand
         public double money;
         public string name;
         public double popularity;
-        public double dailyProfit;
+        public double dailyIncome;
+        public double dailyExpenses;
 
         //constructor
         public Player(string name)
