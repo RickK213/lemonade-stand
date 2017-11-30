@@ -22,6 +22,7 @@ namespace LemonadeStand
         //member methods
         public static void DisplayTitle()
         {
+            Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(@"                      WELCOME TO:");
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -299,9 +300,29 @@ namespace LemonadeStand
             Console.WriteLine("\nEnd of Day Report=============================");
             Console.ResetColor();
             Console.WriteLine($"You managed to sell {numberOfPurchases} cups of lemonade to {numberOfCustomers} potential customers.");
+            Console.WriteLine("Daily Income: {0:C2}", player.dailyIncome);
+            Console.WriteLine("Daily Expenses: {0:C2}", player.dailyExpenses);
+            if ( player.dailyProfit > 0 )
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+            }
             Console.WriteLine("Daily Profit: {0:C2}", player.dailyProfit);
-            Console.WriteLine("Total Profit: {0:C2}", player.totalProfit);
+            if (player.totalProfit > 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+            }
+            Console.WriteLine("Total Profit To Date: {0:C2}", player.totalProfit);
+            Console.ResetColor();
             DisplayDailyInfo(currentDay, day, player);
+            Console.ResetColor();
             GetAnyKeyToContinue("view your inventory report", true);
 
         }
@@ -324,41 +345,41 @@ namespace LemonadeStand
             Console.ResetColor();
         }
 
-        public static void DisplaySupplyShortages(Player player)
+        public static void DisplaySupplyShortages(Player player, int numberOfIceCubesLost, int cupsOfSugarLost, int numberOfLemonsLost)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             if (player.inventory.paperCups.Count == 0)
             {
                 Console.WriteLine("You did not have enough Paper Cups to meet demand");
             }
-            if (player.inventory.lemons.Count == 0)
+            if (player.inventory.lemons.Count == 0 && numberOfLemonsLost == 0)
             {
                 Console.WriteLine("You did not have enough Lemons to meet demand");
             }
-            if (player.inventory.cupsOfSugar.Count == 0)
+            if (player.inventory.cupsOfSugar.Count == 0 && cupsOfSugarLost == 0 )
             {
                 Console.WriteLine("You did not have enough Sugar to meet demand");
             }
-            if (player.inventory.iceCubes.Count == 0)
+            if (numberOfIceCubesLost == 0)
             {
                 Console.WriteLine("You did not have enough Ice Cubes to meet demand");
             }
             Console.ResetColor();
         }
 
-        public static void DisplayDailyInventoryReport(int numberOfIceCubesLost, int numberOfLemonsLost, int cupsOfSugarLost, int currentDay, Player player)
+        public static void DisplayDailyInventoryReport(int numberOfIceCubesLost, int numberOfLemonsLost, int cupsOfSugarLost, int currentDay, Player player, bool isSoldOut)
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("{0}'s INVENTORY REPORT", player.name);
+            Console.WriteLine("{0}'s DAY {1} INVENTORY REPORT", player.name, currentDay);
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("\nSupply Shortages==============================");
             Console.ResetColor();
 
-            if ( player.inventory.cupsOfSugar.Count == 0 || player.inventory.iceCubes.Count == 0 || player.inventory.lemons.Count == 0 || player.inventory.paperCups.Count == 0 )
+            if ( isSoldOut )
             {
-                DisplaySupplyShortages(player);
+                DisplaySupplyShortages(player, numberOfIceCubesLost, cupsOfSugarLost, numberOfLemonsLost);
             }
             else
             {
@@ -378,6 +399,38 @@ namespace LemonadeStand
             }
 
             GetAnyKeyToContinue("continue", true);
+        }
+
+        public static void DisplayEndOfSeasonReport(List<Player> players)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("END OF SEASON REPORT\n");
+            Console.ResetColor();
+            foreach (Player player in players)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"{player.name}'s Results:");
+                Console.WriteLine("==============================================");
+                Console.ResetColor();
+                Console.WriteLine($"Total Income: {0:C2}", player.totalIncome);
+                Console.WriteLine($"Total Expenses: {0:C2}", player.totalExpenses);
+                Console.WriteLine($"Total Profit: {0:C2}", player.totalProfit);
+                //Liquidated Inventory Value (add unit cost of lost inventory to player's total)
+                Console.WriteLine();
+            }
+            if (players[0].totalProfit == players[1].totalProfit)
+            {
+                Console.WriteLine($"{players[0].name} and {players[1].name} have tied!");
+            }
+            else if (players[0].totalProfit > players[1].totalProfit)
+            {
+                Console.WriteLine($"{players[0].name} has defeated {players[1].name}!");
+            }
+            else
+            {
+                Console.WriteLine($"{players[1].name} has defeated {players[0].name}!");
+            }
         }
 
     }

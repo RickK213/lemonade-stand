@@ -300,6 +300,7 @@ namespace LemonadeStand
             List<Customer> customers = new List<Customer>();
             int numberOfCustomers = GetNumberOfCustomers(player);
             int numberOfPurchases = 0;
+            bool isSoldOut = false;
             for ( int i=0; i<numberOfCustomers; i++ )
             {
                 customers.Add( new Customer(random) );
@@ -307,8 +308,8 @@ namespace LemonadeStand
 
             foreach ( Customer customer in customers )
             {
-                bool soldOut = player.checkForSoldOut(cupsPerPitcher);
-                if (!soldOut) {
+                isSoldOut = player.checkForSoldOut(cupsPerPitcher);
+                if (!isSoldOut) {
                     if (customer.MakesPurchase(minLemonadePrice, maxLemonadePrice, minTemperature, maxTemperature, day.weather.highTemp, player.recipe.pricePerCup))
                     {
                         numberOfPurchases++;
@@ -365,7 +366,7 @@ namespace LemonadeStand
                 player.inventory.cupsOfSugar.Clear();
             }
 
-            UI.DisplayDailyInventoryReport(numberOfIceCubesLost, numberOfLemonsLost, cupsOfSugarLost, currentDay, player);
+            UI.DisplayDailyInventoryReport(numberOfIceCubesLost, numberOfLemonsLost, cupsOfSugarLost, currentDay, player, isSoldOut);
 
 
             //run day:
@@ -373,7 +374,7 @@ namespace LemonadeStand
             //DONE - get number of customers that purchase - random dependent on customer satisfaction
             //get number of satisfied customers - dependent on price, recipe
             //calculate overall popularity based on the day's customer satisfaction
-            //inventory losses - some lemons spoil and all ice melts
+            //DONE - inventory losses - some lemons spoil and all ice melts
         }
 
         public void RunGame()
@@ -394,15 +395,18 @@ namespace LemonadeStand
                     MakePlayerPurchases(player, currentDay);
                     SetPlayerRecipe(player, currentDay);
                     RunDailyLemonadeStand(player);
-                    //end of day report
                 }
             }
-            //end of season report:
-            //Total Income (end of game money - player.startingMoney)
-            //Total Expenses (money spent on inventory)
-            //Liquidated Inventory Value (add unit cost of lost inventory to player's total)
-            //Net Profit/Loss ???
-
+            UI.DisplayEndOfSeasonReport(players);
+            string doPlayAgain = UI.GetValidUserOption("Would you like to play again?", new List<string>() { "y", "n" });
+            if ( doPlayAgain == "y" )
+            {
+                RunGame();
+            }
+            else
+            {
+                return;
+            }
         }
 
     }
