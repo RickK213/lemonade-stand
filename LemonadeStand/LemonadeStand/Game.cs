@@ -151,64 +151,42 @@ namespace LemonadeStand
             return cheapestBundles[0];
         }
 
-        //void MakePlayerPurchases(Player player, int currentDay)
+        //void SetPlayerRecipeVariable(int menuSelection, int playerInput, Player player)
         //{
-        //    int menuSelection = 0;
-        //    double cheapestSupplyBundle = GetCheapestSupplyBundle();
-        //    while ((menuSelection != 5) && (player.money > cheapestSupplyBundle))
+        //    switch(menuSelection)
         //    {
-        //        UI.DisplayPlayerInventory(player, currentDay, day);
-        //        UI.DisplayMenuHeader();
-        //        menuSelection = int.Parse(UI.GetValidUserOption("1: Buy Paper Cups\n2: Buy Lemons\n3: Buy Cups of Sugar\n4: Buy Ice Cubes\n5: Done purchasing - Set my recipe!\n", new List<string>() { "1", "2", "3", "4", "5" }));
-        //        if (menuSelection != 5)
-        //        {
-        //            SupplyBundle supplyBundle = UI.GetSupplyBundle(menuSelection, player, random);
-        //            AddBundleToPlayerInventory(player, supplyBundle);
-        //        }
-        //    }
-        //    if (player.money < cheapestSupplyBundle)
-        //    {
-        //        UI.DisplayPlayerInventory(player, currentDay, day);
-        //        UI.DisplayBankruptMessage();
+        //        case 1:
+        //            player.recipe.pricePerCup = playerInput;
+        //            break;
+        //        case 2:
+        //            player.recipe.lemonsPerPitcher = playerInput;
+        //            break;
+        //        case 3:
+        //            player.recipe.sugarPerPitcher = playerInput;
+        //            break;
+        //        case 4:
+        //            player.recipe.icePerCup = playerInput;
+        //            break;
+        //        default:
+        //            break;
         //    }
         //}
 
-        void SetPlayerRecipeVariable(int menuSelection, int playerInput, Player player)
-        {
-            switch(menuSelection)
-            {
-                case 1:
-                    player.recipe.pricePerCup = playerInput;
-                    break;
-                case 2:
-                    player.recipe.lemonsPerPitcher = playerInput;
-                    break;
-                case 3:
-                    player.recipe.sugarPerPitcher = playerInput;
-                    break;
-                case 4:
-                    player.recipe.icePerCup = playerInput;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        void SetPlayerRecipe(Player player, int currentDay)
-        {
-            int menuSelection = 0;
-            while ( menuSelection != 5 )
-            {
-                UI.DisplayPlayerRecipe(player, currentDay, day);
-                UI.DisplayMenuHeader();
-                menuSelection = int.Parse(UI.GetValidUserOption("1: Change Price per Cup\n2: Change Lemons per Pitcher\n3: Change Sugar per Pitcher\n4: Change Ice per Cup\n5: Done with Recipe - Let's start selling!\n", new List<string>() { "1", "2", "3", "4", "5" }));
-                if (menuSelection != 5)
-                {
-                    int playerInput = UI.GetRecipeValue(menuSelection, player, this);
-                    SetPlayerRecipeVariable(menuSelection, playerInput, player);
-                }
-            }
-        }
+        //void SetPlayerRecipe(Player player, int currentDay)
+        //{
+        //    int menuSelection = 0;
+        //    while ( menuSelection != 5 )
+        //    {
+        //        UI.DisplayPlayerRecipe(player, currentDay, day);
+        //        UI.DisplayMenuHeader();
+        //        menuSelection = int.Parse(UI.GetValidUserOption("1: Change Price per Cup\n2: Change Lemons per Pitcher\n3: Change Sugar per Pitcher\n4: Change Ice per Cup\n5: Done with Recipe - Let's start selling!\n", new List<string>() { "1", "2", "3", "4", "5" }));
+        //        if (menuSelection != 5)
+        //        {
+        //            int playerInput = UI.GetRecipeValue(menuSelection, player, this);
+        //            SetPlayerRecipeVariable(menuSelection, playerInput, player);
+        //        }
+        //    }
+        //}
 
         decimal AdjustMinBasedOnTemp(decimal dailyMinNumberOfCustomers, decimal numberOfVariableBreaks)
         {
@@ -418,9 +396,8 @@ namespace LemonadeStand
                     player.dailyExpenses = 0;
                     double cheapestSupplyBundle = GetCheapestSupplyBundle();
                     player.PurchaseInventory(cheapestSupplyBundle, currentDay, day);
-                    //player.SetRecipe();
-                    //MakePlayerPurchases(player, currentDay);
-                    SetPlayerRecipe(player, currentDay);
+                    player.SetRecipe(currentDay, day, this);
+                    //SetPlayerRecipe(currentDay, day);
                     RunDailyLemonadeStand(player);
                 }
             }

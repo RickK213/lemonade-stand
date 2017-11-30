@@ -22,7 +22,7 @@ namespace LemonadeStand
 
         }
 
-        public override void SetRecipe()
+        public override void SetRecipe(int currentDay, Day day, Game game)
         {
 
         }

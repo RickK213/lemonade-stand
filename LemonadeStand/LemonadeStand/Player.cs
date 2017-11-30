@@ -31,7 +31,7 @@ namespace LemonadeStand
 
         //member methods
         public abstract void PurchaseInventory(double cheapestSupplyBundle, int currentDay, Day day);
-        public abstract void SetRecipe();
+        public abstract void SetRecipe(int currentDay, Day day, Game game);
 
         public bool checkForSoldOut(int cupsPerPitcher)
         {
