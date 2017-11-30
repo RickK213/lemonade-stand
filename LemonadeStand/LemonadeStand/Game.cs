@@ -39,7 +39,7 @@ namespace LemonadeStand
         {
             random = new Random();
             players = new List<Player>();
-            //TO DO: rewrite the below line. It's bad to create objects you don't plan on using
+            //TO DO: rewrite the line below. It's bad to create objects you don't plan on using
             gameSupplies = new List<Supply>() { new PaperCup(), new Lemon(random), new CupOfSugar(), new IceCube() };
             minTemperature = 50;
             maxTemperature = 100;
@@ -47,18 +47,18 @@ namespace LemonadeStand
             maxNumberOfCustomers = 100;
             minLemonadePrice = 1;
             maxLemonadePrice = 99;
-            minLemonsPerPitcher = 0;
-            minLemonsPerPitcher = 20;
-            minSugarPerPitcher = 0;
+            minLemonsPerPitcher = 1;
+            maxLemonsPerPitcher = 20;
+            minSugarPerPitcher = 1;
             maxSugarPerPitcher = 20;
-            minIcePerCup = 0;
+            minIcePerCup = 1;
             maxIcePerCup = 10;
             numberOfVariableBreaks = 4;
-            //The multipliers below allow the developer to weigh the effect of Temperature, Forecast & Price on The Number of Customers to Generate
+            cupsPerPitcher = 8;
+            //The multipliers below allow the developer to weigh the effect of Temperature, Forecast & Price on The Number of Customers generated
             temperatureMultiplier = 13;
             forecastMultiplier = 8;
             priceMultiplier = 10;
-            cupsPerPitcher = 8;
         }
 
         //member methods
@@ -334,7 +334,7 @@ namespace LemonadeStand
 
             player.dailyProfit = player.dailyIncome - player.dailyExpenses;
             player.totalProfit = player.totalIncome - player.totalExpenses;
-            UI.DisplayDailyReport(player, currentDay, day, numberOfPurchases, numberOfCustomers);
+            UI.DisplaySalesReport(player, currentDay, day, numberOfPurchases, numberOfCustomers);
 
             //inventory losses
             //TO DO: calculate lost value
@@ -365,7 +365,7 @@ namespace LemonadeStand
                 player.inventory.cupsOfSugar.Clear();
             }
 
-            UI.DisplayDailyLosses(numberOfIceCubesLost, numberOfLemonsLost, cupsOfSugarLost, currentDay);
+            UI.DisplayDailyInventoryReport(numberOfIceCubesLost, numberOfLemonsLost, cupsOfSugarLost, currentDay, player);
 
 
             //run day:

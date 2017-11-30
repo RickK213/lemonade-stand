@@ -131,7 +131,7 @@ namespace LemonadeStand
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("{0} - PURCHASE YOUR INVENTORY", player.name);
+            Console.WriteLine("{0} - PURCHASE YOUR INVENTORY FOR DAY {1}", player.name, currentDay);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("\nCurrent Inventory=============================");
             Console.ResetColor();
@@ -146,7 +146,7 @@ namespace LemonadeStand
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("{0} - SET YOUR PRICE AND RECIPE", player.name);
+            Console.WriteLine("{0} - SET YOUR PRICE AND RECIPE FOR DAY {1}", player.name, currentDay);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("\nCurrent Price/Recipe==========================");
             Console.ResetColor();
@@ -290,9 +290,11 @@ namespace LemonadeStand
             GetAnyKeyToContinue("set your recipe", false);
         }
         
-        public static void DisplayDailyReport(Player player, int currentDay, Day day, int numberOfPurchases, int numberOfCustomers)
+        public static void DisplaySalesReport(Player player, int currentDay, Day day, int numberOfPurchases, int numberOfCustomers)
         {
             Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("{0}'s DAY {1} SALES REPORT", player.name, currentDay);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("\nEnd of Day Report=============================");
             Console.ResetColor();
@@ -300,14 +302,12 @@ namespace LemonadeStand
             Console.WriteLine("Daily Profit: {0:C2}", player.dailyProfit);
             Console.WriteLine("Total Profit: {0:C2}", player.totalProfit);
             DisplayDailyInfo(currentDay, day, player);
-            GetAnyKeyToContinue("view your inventory losses", true);
+            GetAnyKeyToContinue("view your inventory report", true);
 
         }
 
-        public static void DisplayDailyLosses(int numberOfIceCubesLost, int numberOfLemonsLost, int cupsOfSugarLost, int currentDay)
+        public static void DisplayInventoryLosses(int numberOfIceCubesLost, int numberOfLemonsLost, int cupsOfSugarLost)
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("\nInventory Losses==============================");
             Console.ForegroundColor = ConsoleColor.Red;
             if (numberOfIceCubesLost > 0)
             {
@@ -322,7 +322,62 @@ namespace LemonadeStand
                 Console.WriteLine($"You got bugs in your sugar! You lost {cupsOfSugarLost} cups of sugar.");
             }
             Console.ResetColor();
-            GetAnyKeyToContinue("play day " + (currentDay + 1), true);
+        }
+
+        public static void DisplaySupplyShortages(Player player)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            if (player.inventory.paperCups.Count == 0)
+            {
+                Console.WriteLine("You did not have enough Paper Cups to meet demand");
+            }
+            if (player.inventory.lemons.Count == 0)
+            {
+                Console.WriteLine("You did not have enough Lemons to meet demand");
+            }
+            if (player.inventory.cupsOfSugar.Count == 0)
+            {
+                Console.WriteLine("You did not have enough Sugar to meet demand");
+            }
+            if (player.inventory.iceCubes.Count == 0)
+            {
+                Console.WriteLine("You did not have enough Ice Cubes to meet demand");
+            }
+            Console.ResetColor();
+        }
+
+        public static void DisplayDailyInventoryReport(int numberOfIceCubesLost, int numberOfLemonsLost, int cupsOfSugarLost, int currentDay, Player player)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("{0}'s INVENTORY REPORT", player.name);
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\nSupply Shortages==============================");
+            Console.ResetColor();
+
+            if ( player.inventory.cupsOfSugar.Count == 0 || player.inventory.iceCubes.Count == 0 || player.inventory.lemons.Count == 0 || player.inventory.paperCups.Count == 0 )
+            {
+                DisplaySupplyShortages(player);
+            }
+            else
+            {
+                Console.WriteLine("No supply shortages to report.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\nInventory Losses==============================");
+            Console.ResetColor();
+            if (numberOfIceCubesLost > 0 || numberOfLemonsLost > 0 || cupsOfSugarLost > 0)
+            {
+                DisplayInventoryLosses(numberOfIceCubesLost, numberOfLemonsLost, cupsOfSugarLost);
+            }
+            else
+            {
+                Console.WriteLine("No inventory losses to report.");
+            }
+
+            GetAnyKeyToContinue("continue", true);
         }
 
     }
