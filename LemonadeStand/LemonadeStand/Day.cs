@@ -12,9 +12,9 @@ namespace LemonadeStand
         public Weather weather;
 
         //constructor
-        public Day(Game game)
+        public Day(Random random, decimal minTemperature, decimal maxTemperature)
         {
-            weather = new Weather(game);
+            weather = new Weather(random, minTemperature, maxTemperature);
         }
 
         //member methods

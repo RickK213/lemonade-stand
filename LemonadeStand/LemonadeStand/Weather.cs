@@ -9,18 +9,38 @@ namespace LemonadeStand
     public class Weather
     {
         //member variables
-        public int highTemp;
+        public int predictedHighTemp;
+        public int actualHighTemp;
         public List<string> forecastVariables = new List<string>() { "Sunny & Clear", "Overcast", "Cloudy", "Rainy" };
-        public string forecast;
+        public string predictedForecast;
+        public string actualForecast;
+        int predictedForecastIndex;
+        Random random;
         
         //constructor
-        public Weather(Game game)
+        //SOLID NOTE: originaly I passed in the whole game object. That's bad. Now I only pass in the relevant information.
+        public Weather(Random random, decimal minTemperature, decimal maxTemperature)
         {
-            highTemp = game.random.Next(Decimal.ToInt32(game.minTemperature), Decimal.ToInt32(game.maxTemperature+1));
-            int forecastIndex = game.random.Next(0,forecastVariables.Count);
-            forecast = forecastVariables[forecastIndex];
+            this.random = random;
+            predictedHighTemp = random.Next(Decimal.ToInt32(minTemperature), Decimal.ToInt32(maxTemperature+1));
+            predictedForecastIndex = random.Next(0,forecastVariables.Count);
+            predictedForecast = forecastVariables[predictedForecastIndex];
         }
 
         //member methods
+        public void setActualWeather()
+        {
+            int temperatureDifference = random.Next(-10,11);
+            actualHighTemp = predictedHighTemp + temperatureDifference;
+
+            int forecastIndexDifference = random.Next(0,forecastVariables.Count);
+            int actualForecastIndex = predictedForecastIndex + forecastIndexDifference;
+            if (actualForecastIndex > forecastVariables.Count-1)
+            {
+                actualForecastIndex -= forecastVariables.Count; 
+            }
+            actualForecast = forecastVariables[actualForecastIndex];
+        }
+
     }
 }

@@ -172,8 +172,8 @@ namespace LemonadeStand
             Console.ResetColor();
             Console.WriteLine("Day: {0}", currentDay);
             Console.WriteLine("Money: {0:C2}", player.money);
-            Console.WriteLine("High Temperature: {0}°", day.weather.highTemp);
-            Console.WriteLine("Weather Forecast: {0}", day.weather.forecast);
+            Console.WriteLine("High Temperature: {0}°", day.weather.predictedHighTemp);
+            Console.WriteLine("Weather Forecast: {0}", day.weather.predictedForecast);
         }
 
         public static void DisplayPurchaseOptions(Supply supply)

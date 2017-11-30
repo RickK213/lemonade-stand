@@ -190,11 +190,11 @@ namespace LemonadeStand
         decimal AdjustMinBasedOnTemp(decimal dailyMinNumberOfCustomers, decimal numberOfVariableBreaks)
         {
             decimal temperatureSpan = (maxTemperature - minTemperature) / numberOfVariableBreaks;
-            if ((day.weather.highTemp >= minTemperature + temperatureSpan * 2) && (day.weather.highTemp < minTemperature + temperatureSpan * 3))
+            if ((day.weather.predictedHighTemp >= minTemperature + temperatureSpan * 2) && (day.weather.predictedHighTemp < minTemperature + temperatureSpan * 3))
             {
                 dailyMinNumberOfCustomers += temperatureMultiplier;
             }
-            else if (day.weather.highTemp >= minTemperature + temperatureSpan * 3)
+            else if (day.weather.predictedHighTemp >= minTemperature + temperatureSpan * 3)
             {
                 dailyMinNumberOfCustomers += temperatureMultiplier * 2;
             }
@@ -220,11 +220,11 @@ namespace LemonadeStand
         decimal AdjustMinBasedOnForecast(decimal dailyMinNumberOfCustomers)
         {
 
-            if ( day.weather.forecast == "Overcast" )
+            if ( day.weather.predictedForecast == "Overcast" )
             {
                 dailyMinNumberOfCustomers += forecastMultiplier;
             }
-            else if ( day.weather.forecast == "Sunny & Clear" )
+            else if ( day.weather.predictedForecast == "Sunny & Clear" )
             {
                 dailyMinNumberOfCustomers += forecastMultiplier * 2;
             }
@@ -235,11 +235,11 @@ namespace LemonadeStand
         decimal AdjustMaxBasedOnTemp(decimal dailyMaxNumberOfCustomers, decimal numberOfVariableBreaks)
         {
             decimal temperatureSpan = (maxTemperature - minTemperature) / numberOfVariableBreaks;
-            if (day.weather.highTemp < minTemperature + temperatureSpan)
+            if (day.weather.predictedHighTemp < minTemperature + temperatureSpan)
             {
                 dailyMaxNumberOfCustomers -= temperatureMultiplier * 2;
             }
-            else if ((day.weather.highTemp >= minTemperature + temperatureSpan) && (day.weather.highTemp < minTemperature + temperatureSpan * 2))
+            else if ((day.weather.predictedHighTemp >= minTemperature + temperatureSpan) && (day.weather.predictedHighTemp < minTemperature + temperatureSpan * 2))
             {
                 dailyMaxNumberOfCustomers -= temperatureMultiplier;
             }
@@ -265,11 +265,11 @@ namespace LemonadeStand
         decimal AdjustMaxBasedOnForecast(decimal dailyMaxNumberOfCustomers)
         {
 
-            if (day.weather.forecast == "Cloudy")
+            if (day.weather.predictedForecast == "Cloudy")
             {
                 dailyMaxNumberOfCustomers -= forecastMultiplier;
             }
-            else if (day.weather.forecast == "Rainy")
+            else if (day.weather.predictedForecast == "Rainy")
             {
                 dailyMaxNumberOfCustomers -= forecastMultiplier * 2;
             }
@@ -310,7 +310,7 @@ namespace LemonadeStand
             {
                 isSoldOut = player.checkForSoldOut(cupsPerPitcher);
                 if (!isSoldOut) {
-                    if (customer.MakesPurchase(minLemonadePrice, maxLemonadePrice, minTemperature, maxTemperature, day.weather.highTemp, player.recipe.pricePerCup))
+                    if (customer.MakesPurchase(minLemonadePrice, maxLemonadePrice, minTemperature, maxTemperature, day.weather.predictedHighTemp, player.recipe.pricePerCup))
                     {
                         numberOfPurchases++;
                         double moneyMade = (double)Decimal.Divide(player.recipe.pricePerCup, 100);
@@ -387,7 +387,8 @@ namespace LemonadeStand
             {
                 //every day:
                 currentDay = i + 1;
-                day = new Day(this);
+                day = new Day(random, minTemperature, maxTemperature);
+                day.weather.setActualWeather();
                 foreach (Player player in players)
                 {
                     player.dailyIncome = 0;
