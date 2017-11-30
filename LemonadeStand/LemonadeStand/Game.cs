@@ -12,7 +12,7 @@ namespace LemonadeStand
         int numDaysInGame;
         int numPlayers;
         public Day day;
-        List<Player> players;
+        List<HumanPlayer> players;
         List<Supply> gameSupplies;
         public decimal minTemperature;
         public decimal maxTemperature;
@@ -38,7 +38,7 @@ namespace LemonadeStand
         public Game()
         {
             random = new Random();
-            players = new List<Player>();
+            players = new List<HumanPlayer>();
             //TO DO: rewrite the line below. It's bad to create objects you don't plan on using
             gameSupplies = new List<Supply>() { new PaperCup(), new Lemon(random), new CupOfSugar(), new IceCube() };
             minTemperature = 50;
@@ -77,13 +77,13 @@ namespace LemonadeStand
             {
                 Console.WriteLine("Enter a name for Player " + (i + 1) );
                 string playerName = Console.ReadLine();
-                Player player = new Player(playerName);
+                HumanPlayer player = new HumanPlayer(playerName);
                 players.Add(player);
                 Console.WriteLine();
             }
         }
 
-        void AddBundleToPlayerInventory(Player player, SupplyBundle supplyBundle)
+        void AddBundleToPlayerInventory(HumanPlayer player, SupplyBundle supplyBundle)
         {
             player.money = Math.Round((player.money - supplyBundle.price), 2);
             player.dailyExpenses = Math.Round((player.dailyExpenses + supplyBundle.price), 2);
@@ -128,7 +128,7 @@ namespace LemonadeStand
             return cheapestBundles[0];
         }
 
-        void MakePlayerPurchases(Player player, int currentDay)
+        void MakePlayerPurchases(HumanPlayer player, int currentDay)
         {
             int menuSelection = 0;
             double cheapestSupplyBundle = GetCheapestSupplyBundle();
@@ -150,7 +150,7 @@ namespace LemonadeStand
             }
         }
 
-        void SetPlayerRecipeVariable(int menuSelection, int playerInput, Player player)
+        void SetPlayerRecipeVariable(int menuSelection, int playerInput, HumanPlayer player)
         {
             switch(menuSelection)
             {
@@ -171,7 +171,7 @@ namespace LemonadeStand
             }
         }
 
-        void SetPlayerRecipe(Player player, int currentDay)
+        void SetPlayerRecipe(HumanPlayer player, int currentDay)
         {
             int menuSelection = 0;
             while ( menuSelection != 5 )
@@ -190,11 +190,11 @@ namespace LemonadeStand
         decimal AdjustMinBasedOnTemp(decimal dailyMinNumberOfCustomers, decimal numberOfVariableBreaks)
         {
             decimal temperatureSpan = (maxTemperature - minTemperature) / numberOfVariableBreaks;
-            if ((day.weather.predictedHighTemp >= minTemperature + temperatureSpan * 2) && (day.weather.predictedHighTemp < minTemperature + temperatureSpan * 3))
+            if ((day.weather.actualHighTemp >= minTemperature + temperatureSpan * 2) && (day.weather.actualHighTemp < minTemperature + temperatureSpan * 3))
             {
                 dailyMinNumberOfCustomers += temperatureMultiplier;
             }
-            else if (day.weather.predictedHighTemp >= minTemperature + temperatureSpan * 3)
+            else if (day.weather.actualHighTemp >= minTemperature + temperatureSpan * 3)
             {
                 dailyMinNumberOfCustomers += temperatureMultiplier * 2;
             }
@@ -202,7 +202,7 @@ namespace LemonadeStand
             return dailyMinNumberOfCustomers;
         }
 
-        decimal AdjustMinBasedOnPrice(decimal dailyMinNumberOfCustomers, decimal numberOfVariableBreaks, Player player)
+        decimal AdjustMinBasedOnPrice(decimal dailyMinNumberOfCustomers, decimal numberOfVariableBreaks, HumanPlayer player)
         {
             decimal priceSpan = (maxLemonadePrice - minLemonadePrice) / numberOfVariableBreaks;
             if ((player.recipe.pricePerCup >= minLemonadePrice) && (player.recipe.pricePerCup < minLemonadePrice + priceSpan))
@@ -220,11 +220,11 @@ namespace LemonadeStand
         decimal AdjustMinBasedOnForecast(decimal dailyMinNumberOfCustomers)
         {
 
-            if ( day.weather.predictedForecast == "Overcast" )
+            if ( day.weather.actualForecast == "Overcast" )
             {
                 dailyMinNumberOfCustomers += forecastMultiplier;
             }
-            else if ( day.weather.predictedForecast == "Sunny & Clear" )
+            else if ( day.weather.actualForecast == "Sunny & Clear" )
             {
                 dailyMinNumberOfCustomers += forecastMultiplier * 2;
             }
@@ -235,11 +235,11 @@ namespace LemonadeStand
         decimal AdjustMaxBasedOnTemp(decimal dailyMaxNumberOfCustomers, decimal numberOfVariableBreaks)
         {
             decimal temperatureSpan = (maxTemperature - minTemperature) / numberOfVariableBreaks;
-            if (day.weather.predictedHighTemp < minTemperature + temperatureSpan)
+            if (day.weather.actualHighTemp < minTemperature + temperatureSpan)
             {
                 dailyMaxNumberOfCustomers -= temperatureMultiplier * 2;
             }
-            else if ((day.weather.predictedHighTemp >= minTemperature + temperatureSpan) && (day.weather.predictedHighTemp < minTemperature + temperatureSpan * 2))
+            else if ((day.weather.actualHighTemp >= minTemperature + temperatureSpan) && (day.weather.actualHighTemp < minTemperature + temperatureSpan * 2))
             {
                 dailyMaxNumberOfCustomers -= temperatureMultiplier;
             }
@@ -247,7 +247,7 @@ namespace LemonadeStand
             return dailyMaxNumberOfCustomers;
         }
 
-        decimal AdjustMaxBasedOnPrice(decimal dailyMaxNumberOfCustomers, decimal numberOfVariableBreaks, Player player)
+        decimal AdjustMaxBasedOnPrice(decimal dailyMaxNumberOfCustomers, decimal numberOfVariableBreaks, HumanPlayer player)
         {
             decimal priceSpan = (maxLemonadePrice - minLemonadePrice) / numberOfVariableBreaks;
             if ((decimal)player.recipe.pricePerCup > minLemonadePrice + priceSpan * 3)
@@ -265,11 +265,11 @@ namespace LemonadeStand
         decimal AdjustMaxBasedOnForecast(decimal dailyMaxNumberOfCustomers)
         {
 
-            if (day.weather.predictedForecast == "Cloudy")
+            if (day.weather.actualForecast == "Cloudy")
             {
                 dailyMaxNumberOfCustomers -= forecastMultiplier;
             }
-            else if (day.weather.predictedForecast == "Rainy")
+            else if (day.weather.actualForecast == "Rainy")
             {
                 dailyMaxNumberOfCustomers -= forecastMultiplier * 2;
             }
@@ -277,7 +277,7 @@ namespace LemonadeStand
             return dailyMaxNumberOfCustomers;
         }
 
-        int GetNumberOfCustomers(Player player)
+        int GetNumberOfCustomers(HumanPlayer player)
         {
             //TO DO: add in player popularity as a determining factor for number of customers
             decimal dailyMinNumberOfCustomers = minNumberOfCustomers;
@@ -295,7 +295,7 @@ namespace LemonadeStand
             return random.Next(Decimal.ToInt32(dailyMinNumberOfCustomers), Decimal.ToInt32(dailyMaxNumberOfCustomers + 1));
         }
 
-        void RunDailyLemonadeStand(Player player)
+        void RunDailyLemonadeStand(HumanPlayer player)
         {
             List<Customer> customers = new List<Customer>();
             int numberOfCustomers = GetNumberOfCustomers(player);
@@ -310,7 +310,7 @@ namespace LemonadeStand
             {
                 isSoldOut = player.checkForSoldOut(cupsPerPitcher);
                 if (!isSoldOut) {
-                    if (customer.MakesPurchase(minLemonadePrice, maxLemonadePrice, minTemperature, maxTemperature, day.weather.predictedHighTemp, player.recipe.pricePerCup))
+                    if (customer.MakesPurchase(minLemonadePrice, maxLemonadePrice, minTemperature, maxTemperature, day.weather.actualHighTemp, player.recipe.pricePerCup))
                     {
                         numberOfPurchases++;
                         double moneyMade = (double)Decimal.Divide(player.recipe.pricePerCup, 100);
@@ -389,7 +389,7 @@ namespace LemonadeStand
                 currentDay = i + 1;
                 day = new Day(random, minTemperature, maxTemperature);
                 day.weather.setActualWeather();
-                foreach (Player player in players)
+                foreach (HumanPlayer player in players)
                 {
                     player.dailyIncome = 0;
                     player.dailyExpenses = 0;

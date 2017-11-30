@@ -128,7 +128,7 @@ namespace LemonadeStand
             return userInput;
         }
 
-        public static void DisplayPlayerInventory(Player player, int currentDay, Day day)
+        public static void DisplayPlayerInventory(HumanPlayer player, int currentDay, Day day)
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
@@ -143,7 +143,7 @@ namespace LemonadeStand
             DisplayDailyInfo(currentDay, day, player);
         }
 
-        public static void DisplayPlayerRecipe(Player player, int currentDay, Day day)
+        public static void DisplayPlayerRecipe(HumanPlayer player, int currentDay, Day day)
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
@@ -165,15 +165,15 @@ namespace LemonadeStand
             Console.WriteLine("\nMenu Options==================================");
             Console.ResetColor();
         }
-        public static void DisplayDailyInfo(int currentDay, Day day, Player player)
+        public static void DisplayDailyInfo(int currentDay, Day day, HumanPlayer player)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("\nDaily Information=============================");
             Console.ResetColor();
             Console.WriteLine("Day: {0}", currentDay);
             Console.WriteLine("Money: {0:C2}", player.money);
-            Console.WriteLine("High Temperature: {0}°", day.weather.predictedHighTemp);
-            Console.WriteLine("Weather Forecast: {0}", day.weather.predictedForecast);
+            Console.WriteLine("Predicted High Temperature: {0}°", day.weather.predictedHighTemp);
+            Console.WriteLine("Predicted Precipitation: {0}", day.weather.predictedForecast);
         }
 
         public static void DisplayPurchaseOptions(Supply supply)
@@ -188,7 +188,7 @@ namespace LemonadeStand
             Console.WriteLine("3: {0} {1} for {2:C2}", supply.bundle3.quantity, supply.pluralName, supply.bundle3.price);
         }
 
-        public static SupplyBundle GetSupplyBundle(int supplyBundleChoice, Player player, Random random)
+        public static SupplyBundle GetSupplyBundle(int supplyBundleChoice, HumanPlayer player, Random random)
         {
             SupplyBundle chosenBundle;
 
@@ -261,7 +261,7 @@ namespace LemonadeStand
             }
         }
 
-        public static int GetRecipeValue(int menuSelection, Player player, Game game)
+        public static int GetRecipeValue(int menuSelection, HumanPlayer player, Game game)
         {
         Console.Clear();
             switch (menuSelection)
@@ -291,7 +291,7 @@ namespace LemonadeStand
             GetAnyKeyToContinue("set your recipe", false);
         }
         
-        public static void DisplaySalesReport(Player player, int currentDay, Day day, int numberOfPurchases, int numberOfCustomers)
+        public static void DisplaySalesReport(HumanPlayer player, int currentDay, Day day, int numberOfPurchases, int numberOfCustomers)
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
@@ -320,9 +320,15 @@ namespace LemonadeStand
                 Console.ForegroundColor = ConsoleColor.Red;
             }
             Console.WriteLine("Total Profit To Date: {0:C2}", player.totalProfit);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\nDaily Information=============================");
             Console.ResetColor();
-            DisplayDailyInfo(currentDay, day, player);
-            Console.ResetColor();
+            Console.WriteLine("Day: {0}", currentDay);
+            Console.WriteLine("Money: {0:C2}", player.money);
+            Console.WriteLine("Predicted High Temperature: {0}°", day.weather.predictedHighTemp);
+            Console.WriteLine("   Actual High Temperature: {0}°", day.weather.actualHighTemp);
+            Console.WriteLine("Predicted Precipitation: {0}", day.weather.predictedForecast);
+            Console.WriteLine("   Actual Precipitation: {0}", day.weather.actualForecast);
             GetAnyKeyToContinue("view your inventory report", true);
 
         }
@@ -345,7 +351,7 @@ namespace LemonadeStand
             Console.ResetColor();
         }
 
-        public static void DisplaySupplyShortages(Player player, int numberOfIceCubesLost, int cupsOfSugarLost, int numberOfLemonsLost)
+        public static void DisplaySupplyShortages(HumanPlayer player, int numberOfIceCubesLost, int cupsOfSugarLost, int numberOfLemonsLost)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             if (player.inventory.paperCups.Count == 0)
@@ -367,7 +373,7 @@ namespace LemonadeStand
             Console.ResetColor();
         }
 
-        public static void DisplayDailyInventoryReport(int numberOfIceCubesLost, int numberOfLemonsLost, int cupsOfSugarLost, int currentDay, Player player, bool isSoldOut)
+        public static void DisplayDailyInventoryReport(int numberOfIceCubesLost, int numberOfLemonsLost, int cupsOfSugarLost, int currentDay, HumanPlayer player, bool isSoldOut)
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
@@ -401,13 +407,13 @@ namespace LemonadeStand
             GetAnyKeyToContinue("continue", true);
         }
 
-        public static void DisplayEndOfSeasonReport(List<Player> players)
+        public static void DisplayEndOfSeasonReport(List<HumanPlayer> players)
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("END OF SEASON REPORT\n");
             Console.ResetColor();
-            foreach (Player player in players)
+            foreach (HumanPlayer player in players)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"{player.name}'s Results:");
