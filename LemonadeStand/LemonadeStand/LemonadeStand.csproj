@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComputerPlayer.cs" />
     <Compile Include="CupOfSugar.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="Database.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="Inventory.cs" />
     <Compile Include="Lemon.cs" />
     <Compile Include="PaperCup.cs" />
+    <Compile Include="HumanPlayer.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
