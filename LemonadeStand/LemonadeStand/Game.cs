@@ -10,6 +10,7 @@ namespace LemonadeStand
     {
         //TO DO: Check to be sure all of these need to be public and maybe move appropriate stuff to other classes
         //member variables
+        Database database;
         public Random random;
         int numPlayersInGame;
         public Day day;
@@ -38,6 +39,7 @@ namespace LemonadeStand
         //constructor
         public Game()
         {
+            database = new Database();
             random = new Random();
             players = new List<Player>();
             store = new Store(random);
@@ -282,19 +284,14 @@ namespace LemonadeStand
             }
 
             UI.DisplayDailyInventoryReport(numberOfIceCubesLost, numberOfLemonsLost, cupsOfSugarLost, currentDay, player, isSoldOut);
-
-
-            //run day:
-            //DONE - get number of total customers - random dependent on price, weather and popularity
-            //DONE - get number of customers that purchase - random dependent on customer satisfaction
-            //get number of satisfied customers - dependent on price, recipe
-            //calculate overall popularity based on the day's customer satisfaction
-            //DONE - inventory losses - some lemons spoil and all ice melts
+            //TO DO: get number of satisfied customers - dependent on price, recipe
+            //TO DO: calculate overall popularity based on the day's customer satisfaction
         }
 
         public void RunGame()
         {
-            UI.DisplayIntroScreen();
+            string leaderboard = database.GetLeaderboard();
+            UI.DisplayIntroScreen(leaderboard);
             SetUpGame();
             AddPlayersToGame();
             //game loop
@@ -315,6 +312,7 @@ namespace LemonadeStand
                     RunDailyLemonadeStand(player);
                 }
             }
+            database.SavePlayerScores(players);
             UI.DisplayEndOfSeasonReport(players);
             string doPlayAgain = UI.GetValidUserOption("Would you like to play again?", new List<string>() { "y", "n" });
             if ( doPlayAgain == "y" )

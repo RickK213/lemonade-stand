@@ -65,6 +65,7 @@ namespace LemonadeStand
             Console.WriteLine("But if you’re popularity is high, you’ll do okay, even on a rainy day!");
             Console.WriteLine("\nAt the end of 7, 14, or 21 days you’ll see how much money you made.");
             Console.WriteLine("Play again, and try to beat your high score!");
+            Console.WriteLine();
         }
 
         public static void GetAnyKeyToContinue(string nextAction, bool doClearAfter)
@@ -77,11 +78,14 @@ namespace LemonadeStand
             }
         }
 
-        public static void DisplayIntroScreen()
+        public static void DisplayIntroScreen(string leaderboard)
         {
             ResizeConsoleWindow();
             DisplayTitle();
             DisplayInstructions();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(leaderboard);
+            Console.ResetColor();
             GetAnyKeyToContinue("start playing", true);
         }
 
