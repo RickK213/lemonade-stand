@@ -176,72 +176,19 @@ namespace LemonadeStand
             Console.WriteLine("Predicted Precipitation: {0}", day.weather.predictedForecast);
         }
 
-        public static void DisplayPurchaseOptions(Supply supply, double playerMoney)
+        public static void DisplayBundlePurchaseOptions(List<SupplyBundle> supplyBundleList, double playerMoney)
         {
+
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("Acquisition: {0}", supply.pluralName);
+            Console.WriteLine("Acquisition: {0}", supplyBundleList[0].contents);
             Console.ResetColor();
             Console.WriteLine("Funds available: {0:C2}\n", playerMoney);
             Console.WriteLine("You can buy:");
-            Console.WriteLine("1: {0} {1} for {2:C2}", supply.bundle1.quantity, supply.pluralName, supply.bundle1.price);
-            Console.WriteLine("2: {0} {1} for {2:C2}", supply.bundle2.quantity, supply.pluralName, supply.bundle2.price);
-            Console.WriteLine("3: {0} {1} for {2:C2}", supply.bundle3.quantity, supply.pluralName, supply.bundle3.price);
-        }
-
-        public static SupplyBundle GetSupplyBundle(int supplyBundleChoice, Player player, Random random)
-        {
-            SupplyBundle chosenBundle;
-
-            Supply supply = new Supply();
-
-            //TO DO: Figure out a better way to do the below stuff. It's bad to create objects you don't need.
-            switch (supplyBundleChoice)
+            for ( int i=0; i<supplyBundleList.Count; i++ )
             {
-                case 1:
-                    supply = new PaperCup();
-                    break;
-                case 2:
-                    supply = new Lemon(random);
-                    break;
-                case 3:
-                    supply = new CupOfSugar();
-                    break;
-                case 4:
-                    supply = new IceCube();
-                    break;
-                default:
-                    break;
+                Console.WriteLine( (i + 1) + ": {0} {1} for {2:C2}", supplyBundleList[i].quantity, supplyBundleList[i].contents, supplyBundleList[i].price);
             }
-
-            DisplayPurchaseOptions(supply, player.money);
-
-            int bundleSelection = int.Parse(UI.GetValidUserOption("", new List<string>() { "1", "2", "3" }));
-
-            if ( bundleSelection == 1 )
-            {
-                chosenBundle = supply.bundle1;
-            }
-            else if (bundleSelection == 2)
-            {
-                chosenBundle = supply.bundle2;
-            }
-            else
-            {
-                chosenBundle = supply.bundle3;
-            }
-
-            if (player.money<chosenBundle.price)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Sorry, you don't have enough money to make this purchase.");
-                Console.ResetColor();
-                GetAnyKeyToContinue("continue", false);
-                return GetSupplyBundle(supplyBundleChoice, player, random);
-            }
-
-            return chosenBundle;
-
         }
 
         public static int GetUserIntegerInRange(string instruction, int min, int max)

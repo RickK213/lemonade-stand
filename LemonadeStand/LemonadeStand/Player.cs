@@ -30,8 +30,35 @@ namespace LemonadeStand
         }
 
         //member methods
-        public abstract void PurchaseInventory(double cheapestSupplyBundle, int currentDay, Day day);
+        public abstract void PurchaseInventory(double cheapestSupplyBundle, int currentDay, Day day, Store store);
         public abstract void SetRecipe(int currentDay, Day day, Game game);
+
+        public void AddBundleToInventory(SupplyBundle supplyBundle)
+        {
+            money = Math.Round((money - supplyBundle.price), 2);
+            dailyExpenses = Math.Round((dailyExpenses + supplyBundle.price), 2);
+            totalExpenses = Math.Round((totalExpenses + supplyBundle.price), 2);
+            for (int i = 0; i < supplyBundle.quantity; i++)
+            {
+                switch (supplyBundle.contents)
+                {
+                    case "Paper Cups":
+                        inventory.paperCups.Add( new PaperCup() );
+                        break;
+                    case "Lemons":
+                        inventory.lemons.Add( new Lemon(random) );
+                        break;
+                    case "Cups of Sugar":
+                        inventory.cupsOfSugar.Add( new CupOfSugar() );
+                        break;
+                    case "Ice Cubes":
+                        inventory.iceCubes.Add( new IceCube() );
+                        break;
+                }
+            }
+        }
+
+
 
         public bool checkForSoldOut(int cupsPerPitcher)
         {

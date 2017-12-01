@@ -9,11 +9,13 @@ namespace LemonadeStand
     public class Game
     {
         //member variables
+        public Random random;
         int numDaysInGame;
         int numPlayers;
         public Day day;
         List<Player> players;
         List<Supply> gameSupplies;
+        Store store;
         public decimal minTemperature;
         public decimal maxTemperature;
         decimal minNumberOfCustomers;
@@ -32,7 +34,6 @@ namespace LemonadeStand
         int priceMultiplier;
         int cupsPerPitcher;
         int currentDay;
-        public Random random;
 
         //constructor
         public Game()
@@ -41,6 +42,8 @@ namespace LemonadeStand
             players = new List<Player>();
             //TO DO: rewrite the line below. It's bad to create objects you don't plan on using
             gameSupplies = new List<Supply>() { new PaperCup(), new Lemon(random), new CupOfSugar(), new IceCube() };
+            store = new Store(random);
+            store.SetDailyBundlePrices();
             minTemperature = 50;
             maxTemperature = 100;
             minNumberOfCustomers = 10;
@@ -131,61 +134,24 @@ namespace LemonadeStand
         //    }
         //}
 
-        double GetCheapestBundle(Supply supply)
-        {
-            List<double> bundlePrices = new List<double>();
-            bundlePrices.Add(supply.bundle1.price);
-            bundlePrices.Sort();
-            return bundlePrices[0];
-        }
-
-        double GetCheapestSupplyBundle()
-        {
-            List<double> cheapestBundles = new List<double>();
-            foreach ( Supply supply in gameSupplies )
-            {
-                double cheapestBundle = GetCheapestBundle(supply);
-                cheapestBundles.Add(cheapestBundle);
-            }
-            cheapestBundles.Sort();
-            return cheapestBundles[0];
-        }
-
-        //void SetPlayerRecipeVariable(int menuSelection, int playerInput, Player player)
+        //double GetCheapestBundle(Supply supply)
         //{
-        //    switch(menuSelection)
-        //    {
-        //        case 1:
-        //            player.recipe.pricePerCup = playerInput;
-        //            break;
-        //        case 2:
-        //            player.recipe.lemonsPerPitcher = playerInput;
-        //            break;
-        //        case 3:
-        //            player.recipe.sugarPerPitcher = playerInput;
-        //            break;
-        //        case 4:
-        //            player.recipe.icePerCup = playerInput;
-        //            break;
-        //        default:
-        //            break;
-        //    }
+        //    List<double> bundlePrices = new List<double>();
+        //    bundlePrices.Add(supply.bundle1.price);
+        //    bundlePrices.Sort();
+        //    return bundlePrices[0];
         //}
 
-        //void SetPlayerRecipe(Player player, int currentDay)
+        //double GetCheapestSupplyBundle()
         //{
-        //    int menuSelection = 0;
-        //    while ( menuSelection != 5 )
+        //    List<double> cheapestBundles = new List<double>();
+        //    foreach ( Supply supply in gameSupplies )
         //    {
-        //        UI.DisplayPlayerRecipe(player, currentDay, day);
-        //        UI.DisplayMenuHeader();
-        //        menuSelection = int.Parse(UI.GetValidUserOption("1: Change Price per Cup\n2: Change Lemons per Pitcher\n3: Change Sugar per Pitcher\n4: Change Ice per Cup\n5: Done with Recipe - Let's start selling!\n", new List<string>() { "1", "2", "3", "4", "5" }));
-        //        if (menuSelection != 5)
-        //        {
-        //            int playerInput = UI.GetRecipeValue(menuSelection, player, this);
-        //            SetPlayerRecipeVariable(menuSelection, playerInput, player);
-        //        }
+        //        double cheapestBundle = GetCheapestBundle(supply);
+        //        cheapestBundles.Add(cheapestBundle);
         //    }
+        //    cheapestBundles.Sort();
+        //    return cheapestBundles[0];
         //}
 
         decimal AdjustMinBasedOnTemp(decimal dailyMinNumberOfCustomers, decimal numberOfVariableBreaks)
@@ -394,8 +360,8 @@ namespace LemonadeStand
                 {
                     player.dailyIncome = 0;
                     player.dailyExpenses = 0;
-                    double cheapestSupplyBundle = GetCheapestSupplyBundle();
-                    player.PurchaseInventory(cheapestSupplyBundle, currentDay, day);
+                    double cheapestSupplyBundle = store.GetCheapestSupplyBundlePrice();
+                    player.PurchaseInventory(cheapestSupplyBundle, currentDay, day, store);
                     player.SetRecipe(currentDay, day, this);
                     //SetPlayerRecipe(currentDay, day);
                     RunDailyLemonadeStand(player);

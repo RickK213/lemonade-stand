@@ -11,15 +11,10 @@ namespace LemonadeStand
         //member variables
         public string name;
         public string pluralName;
-        public SupplyBundle bundle1;
-        public SupplyBundle bundle2;
-        public SupplyBundle bundle3;
-        public List<SupplyBundle> supplyBundles;
 
         //constructor
         public Supply()
         {
-            supplyBundles = new List<SupplyBundle>();
         }
 
         //member methods
