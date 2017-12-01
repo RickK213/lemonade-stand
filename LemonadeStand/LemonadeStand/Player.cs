@@ -52,6 +52,7 @@ namespace LemonadeStand
             totalExpenses = Math.Round((totalExpenses + supplyBundle.price), 2);
             for (int i = 0; i < supplyBundle.quantity; i++)
             {
+                //TO DO: seems like there should be a better way to do this than hard-coding the strings in the switch cases
                 switch (supplyBundle.typeOfSupply)
                 {
                     case "Paper Cups":

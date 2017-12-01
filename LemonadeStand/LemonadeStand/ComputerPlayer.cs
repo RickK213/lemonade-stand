@@ -12,7 +12,7 @@ namespace LemonadeStand
         Store store;
 
         //constructor
-        //TO DO: Don't pass in the whole store...just find out what you actually need from it.
+        //TO DO: Don't pass in the whole store...find out what you actually need from store.
         public ComputerPlayer(Random random, Store store)
         {
             name = "Lemonator 5000";

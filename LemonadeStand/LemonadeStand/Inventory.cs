@@ -24,10 +24,8 @@ namespace LemonadeStand
         }
 
         //member methods
-        void AddSupply(Supply supply, List<Supply> list)
-        {
 
-        }
+        //TO DO: you can probably move some of the methods from the Player classes to the Inventory Class
 
     }
 }

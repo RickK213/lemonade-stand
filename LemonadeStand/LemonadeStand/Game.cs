@@ -194,7 +194,7 @@ namespace LemonadeStand
 
         int GetNumberOfCustomers(int pricePerCup)
         {
-            //TO DO: add in player popularity as a determining factor for number of customers
+            //TO DO: add player popularity as a determining factor for number of customers
             decimal dailyMinNumberOfCustomers = minNumberOfCustomers;
             decimal dailyMaxNumberOfCustomers = maxNumberOfCustomers;
 
@@ -253,7 +253,6 @@ namespace LemonadeStand
             player.totalProfit = player.totalIncome - player.totalExpenses;
             UI.DisplaySalesReport(player, currentDay, day, numberOfPurchases, numberOfCustomers);
 
-            //inventory losses
             //TO DO: calculate lost value
             int numberOfIceCubesLost = player.inventory.iceCubes.Count;
             player.inventory.iceCubes.Clear();
@@ -294,10 +293,8 @@ namespace LemonadeStand
             UI.DisplayIntroScreen(leaderboard);
             SetUpGame();
             AddPlayersToGame();
-            //game loop
             for (int i=0; i<numDaysInGame; i++)
             {
-                //every day:
                 currentDay = i + 1;
                 day = new Day(random, minTemperature, maxTemperature);
                 day.weather.setActualWeather();
@@ -307,6 +304,8 @@ namespace LemonadeStand
                     player.dailyExpenses = 0;
                     player.notEnoughIce = true;
                     double cheapestSupplyBundle = store.GetCheapestSupplyBundlePrice();
+                    //TO DO: Add 'quit game' option for all main menus
+                    //TD DO: Add 'back to store' option on acquisition menus
                     player.PurchaseInventory(cheapestSupplyBundle, currentDay, day, store);
                     player.SetRecipe(currentDay, day, this);
                     RunDailyLemonadeStand(player);

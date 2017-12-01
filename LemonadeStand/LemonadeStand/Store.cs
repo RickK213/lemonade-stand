@@ -105,6 +105,7 @@ namespace LemonadeStand
             List<SupplyBundle> chosenBundleList = new List<SupplyBundle>();
             switch (typeOfBundle)
             {
+                //TO DO: seems like there should be a better way to do this than hard-coding the strings in the switch cases
                 case "Paper Cups":
                     chosenBundleList = paperCupBundles;
                     break;

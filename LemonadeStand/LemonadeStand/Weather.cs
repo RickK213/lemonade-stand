@@ -18,7 +18,6 @@ namespace LemonadeStand
         Random random;
         
         //constructor
-        //SOLID NOTE: originaly I passed in the whole game object. That's bad. Now I only pass in the relevant information.
         public Weather(Random random, decimal minTemperature, decimal maxTemperature)
         {
             this.random = random;
