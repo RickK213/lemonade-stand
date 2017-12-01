@@ -49,7 +49,7 @@ namespace LemonadeStand
             Console.WriteLine("expect them to buy nearly as much as they would on a hot day so buy accordingly.");
             Console.WriteLine("Feel free to set your prices higher on those hot days too, as you’ll make more");
             Console.WriteLine("profit, even if you sell a bit less lemonade.");
-            Console.WriteLine("Play a friend in 2-player mode or play against the \"LEMONATOR 5000\" in 1-player mode. ");
+            Console.WriteLine("\nPlay a friend in 2-player mode or play against the \"LEMONATOR 5000\" in 1-player mode. ");
             Console.WriteLine();
         }
 
@@ -63,13 +63,15 @@ namespace LemonadeStand
             }
         }
 
-        public static void DisplayIntroScreen(string leaderboard)
+        //THE BELOW ARE COMMENTED OUT BECAUSE OF THE DATABASE:
+        //public static void DisplayIntroScreen(string leaderboard)
+        public static void DisplayIntroScreen()
         {
             ResizeConsoleWindow();
             DisplayTitle();
             DisplayInstructions();
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(leaderboard);
+            //Console.WriteLine(leaderboard);
             Console.ResetColor();
             GetAnyKeyToContinue("start playing", true);
         }

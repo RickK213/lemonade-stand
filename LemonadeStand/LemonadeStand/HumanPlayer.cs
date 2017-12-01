@@ -44,7 +44,7 @@ namespace LemonadeStand
             }
         }
 
-        void SetPlayerRecipeVariable(int menuSelection, int playerInput)
+        void SetRecipeVariable(int menuSelection, int playerInput)
         {
             switch (menuSelection)
             {
@@ -77,7 +77,7 @@ namespace LemonadeStand
                 {
                     //TO DO: Don't pass in whole game object...figure out what you need from Game
                     int playerInput = UI.GetRecipeValue(menuSelection, this, game);
-                    SetPlayerRecipeVariable(menuSelection, playerInput);
+                    SetRecipeVariable(menuSelection, playerInput);
                 }
             }
         }

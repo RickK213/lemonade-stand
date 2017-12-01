@@ -289,8 +289,10 @@ namespace LemonadeStand
 
         public void RunGame()
         {
-            string leaderboard = database.GetLeaderboard();
-            UI.DisplayIntroScreen(leaderboard);
+            //THE BELOW ARE COMMENTED OUT BECAUSE OF THE DATABASE:
+            //string leaderboard = database.GetLeaderboard();
+            //UI.DisplayIntroScreen(leaderboard);
+            UI.DisplayIntroScreen();
             SetUpGame();
             AddPlayersToGame();
             for (int i=0; i<numDaysInGame; i++)
@@ -311,7 +313,8 @@ namespace LemonadeStand
                     RunDailyLemonadeStand(player);
                 }
             }
-            database.SavePlayerScores(players);
+            //THE BELOW IS COMMENTED OUT BECAUSE OF THE DATABASE:
+            //database.SavePlayerScores(players);
             UI.DisplayEndOfSeasonReport(players);
             string doPlayAgain = UI.GetValidUserOption("Would you like to play again?", new List<string>() { "y", "n" });
             if ( doPlayAgain == "y" )
