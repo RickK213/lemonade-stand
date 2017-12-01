@@ -44,7 +44,7 @@ namespace LemonadeStand
 
         public static void DisplayInstructions()
         {
-            Console.WriteLine("\nYou have 7, 14, or 21 days to make as much money as possible, and you’ve decided");
+            Console.WriteLine("\nYou have 7 or 14 days to make as much money as possible, and you’ve decided");
             Console.WriteLine("to open a lemonade stand! You’ll have complete control over your business,");
             Console.WriteLine("including pricing, quality control, inventory control, and purchasing supplies.");
             Console.WriteLine("Buy your ingredients, set your recipe, and start selling!");
@@ -53,18 +53,12 @@ namespace LemonadeStand
             Console.WriteLine("better one. Make sure you buy enough of all your ingredients, or you won’t be");
             Console.WriteLine("able to sell!");
             Console.WriteLine("\nYou’ll also have to deal with the weather, which will play a big part when customers");
-            Console.WriteLine("are deciding whether or not to buy your lemonade.Read the weather report every day!");
+            Console.WriteLine("are deciding whether or not to buy your lemonade. Read the weather report every day!");
             Console.WriteLine("When the temperature drops, or the weather turns bad (overcast, cloudy, rain), don’t");
-            Console.WriteLine("expect them to buy nearly as much as they would on a hot, hazy day, so buy accordingly.");
-            Console.WriteLine("Feel free to set your prices higher on those hot, muggy days too, as you’ll make more");
+            Console.WriteLine("expect them to buy nearly as much as they would on a hot day so buy accordingly.");
+            Console.WriteLine("Feel free to set your prices higher on those hot days too, as you’ll make more");
             Console.WriteLine("profit, even if you sell a bit less lemonade.");
-            Console.WriteLine("\nThe other major factor which comes into play is your customer’s satisfaction.");
-            Console.WriteLine("As you sell your lemonade, people will decide how much they like or dislike it.");
-            Console.WriteLine("This will make your business more or less popular. If your popularity is low, fewer");
-            Console.WriteLine("people will want to buy your lemonade, even if the weather is hot and sunny.");
-            Console.WriteLine("But if you’re popularity is high, you’ll do okay, even on a rainy day!");
-            Console.WriteLine("\nAt the end of 7, 14, or 21 days you’ll see how much money you made.");
-            Console.WriteLine("Play again, and try to beat your high score!");
+            Console.WriteLine("Play a friend in 2-player mode or play against the \"LEMONATOR 5000\" in 1-player mode. ");
             Console.WriteLine();
         }
 

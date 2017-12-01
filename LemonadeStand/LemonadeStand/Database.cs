@@ -73,7 +73,7 @@ namespace LemonadeStand
             SqlDataReader myDataReader = null;
 
             SqlConnection mySqlConnection = new SqlConnection(connectionString);
-            SqlCommand mySqlCommand = new SqlCommand("SELECT TOP 10 Player_Name, Total_Profit FROM ls.High_Scores ORDER BY Total_Profit DESC;", mySqlConnection);
+            SqlCommand mySqlCommand = new SqlCommand("SELECT TOP 5 Player_Name, Total_Profit FROM ls.High_Scores ORDER BY Total_Profit DESC;", mySqlConnection);
             mySqlConnection.Open();
             myDataReader = mySqlCommand.ExecuteReader(CommandBehavior.CloseConnection);
 

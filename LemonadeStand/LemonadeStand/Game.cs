@@ -71,7 +71,7 @@ namespace LemonadeStand
             Console.WriteLine("LET'S SET UP SOME GAME OPTIONS!\n");
             Console.ResetColor();
             numPlayersInGame = int.Parse(UI.GetValidUserOption("How many players?", new List<string>() { "1", "2" }));
-            numDaysInGame = int.Parse(UI.GetValidUserOption("How many days would you like to play for?", new List<string>() { "7", "14", "30" }));
+            numDaysInGame = int.Parse(UI.GetValidUserOption("How many days would you like to play for?", new List<string>() { "7", "14" }));
         }
 
         void AddHumanPlayer(int playerNumber)
@@ -317,6 +317,7 @@ namespace LemonadeStand
             string doPlayAgain = UI.GetValidUserOption("Would you like to play again?", new List<string>() { "y", "n" });
             if ( doPlayAgain == "y" )
             {
+                players.Clear();
                 RunGame();
             }
             else
