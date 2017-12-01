@@ -12,7 +12,7 @@ namespace LemonadeStand
         public Inventory inventory;
         public Recipe recipe;
         public double startingMoney;
-        public double money;
+        public double moneyAvailable;
         public string name;
         public double popularity;
         public double dailyIncome;
@@ -22,11 +22,23 @@ namespace LemonadeStand
         public double totalExpenses;
         public double totalProfit;
         public Random random;
+        public bool notEnoughCups;
+        public bool notEnoughLemons;
+        public bool notEnoughSugar;
+        public bool notEnoughIce;
 
         //constructor
         public Player()
         {
-
+            inventory = new Inventory();
+            recipe = new Recipe();
+            startingMoney = 20.00;
+            moneyAvailable = startingMoney;
+            popularity = .50;
+            notEnoughCups = true;
+            notEnoughLemons = true;
+            notEnoughSugar = true;
+            notEnoughIce = true;
         }
 
         //member methods
@@ -35,12 +47,12 @@ namespace LemonadeStand
 
         public void AddBundleToInventory(SupplyBundle supplyBundle)
         {
-            money = Math.Round((money - supplyBundle.price), 2);
+            moneyAvailable = Math.Round((moneyAvailable - supplyBundle.price), 2);
             dailyExpenses = Math.Round((dailyExpenses + supplyBundle.price), 2);
             totalExpenses = Math.Round((totalExpenses + supplyBundle.price), 2);
             for (int i = 0; i < supplyBundle.quantity; i++)
             {
-                switch (supplyBundle.contents)
+                switch (supplyBundle.typeOfSupply)
                 {
                     case "Paper Cups":
                         inventory.paperCups.Add( new PaperCup() );
@@ -62,24 +74,52 @@ namespace LemonadeStand
 
         public bool checkForSoldOut(int cupsPerPitcher)
         {
-            bool soldOut = false;
-            if (inventory.lemons.Count < recipe.lemonsPerPitcher / cupsPerPitcher)
+            bool isSoldOut = false;
+            decimal lemonsPerCup = Decimal.Divide(recipe.lemonsPerPitcher, cupsPerPitcher);
+
+            if (inventory.lemons.Count < lemonsPerCup )
             {
-                soldOut = true;
+                isSoldOut = true;
+                notEnoughLemons = true;
             }
+            else
+            {
+                notEnoughLemons = false;
+            }
+
             if (inventory.paperCups.Count == 0)
             {
-                soldOut = true;
+                isSoldOut = true;
+                notEnoughCups = true;
             }
+            else
+            {
+                notEnoughCups = false;
+            }
+
             if (inventory.iceCubes.Count < recipe.icePerCup)
             {
-                soldOut = true;
+                isSoldOut = true;
+                notEnoughIce = true;
             }
-            if (inventory.cupsOfSugar.Count < recipe.sugarPerPitcher / cupsPerPitcher)
+            else
+            { 
+                notEnoughIce = false;
+            }
+
+            decimal sugarPerCup = Decimal.Divide(recipe.sugarPerPitcher, cupsPerPitcher);
+
+            if (inventory.cupsOfSugar.Count < sugarPerCup )
             {
-                soldOut = true;
+                isSoldOut = true;
+                notEnoughSugar = true;
             }
-            return soldOut;
+            else
+            {
+                notEnoughSugar = false;
+            }
+
+            return isSoldOut;
         }
 
     }

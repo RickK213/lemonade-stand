@@ -14,11 +14,6 @@ namespace LemonadeStand
         public HumanPlayer(Random random, string name)
         {
             this.name = name;
-            startingMoney = 20.00;
-            money = startingMoney;
-            inventory = new Inventory();
-            recipe = new Recipe();
-            popularity = .50;
             this.random = random;
         }
 
@@ -27,7 +22,7 @@ namespace LemonadeStand
         public override void PurchaseInventory(double cheapestSupplyBundle, int currentDay, Day day, Store store)
         {
             int menuSelection = 0;
-            while ((menuSelection != 5) && (money > cheapestSupplyBundle))
+            while ((menuSelection != 5) && (moneyAvailable > cheapestSupplyBundle))
             {
                 UI.DisplayPlayerInventory(this, currentDay, day);
                 UI.DisplayMenuHeader();
@@ -36,14 +31,14 @@ namespace LemonadeStand
                 List<string> bundleMenuInputOptions = store.getBundleMenuInputOptions();
 
                 menuSelection = int.Parse(UI.GetValidUserOption(bundleMenuInstructions, bundleMenuInputOptions));
-                if (menuSelection != store.bundleContents.Count + 1)
+                if (menuSelection != store.bundleTypes.Count + 1)
                 {
-                    string bundleContents = store.bundleContents[menuSelection-1];
-                    SupplyBundle supplyBundle = store.GetSupplyBundle(bundleContents, money);
+                    string typeOfBundle = store.bundleTypes[menuSelection-1];
+                    SupplyBundle supplyBundle = store.GetSupplyBundle(typeOfBundle, moneyAvailable);
                     AddBundleToInventory(supplyBundle);
                 }
             }
-            if (money < cheapestSupplyBundle)
+            if (moneyAvailable < cheapestSupplyBundle)
             {
                 UI.DisplayPlayerInventory(this, currentDay, day);
                 UI.DisplayBankruptMessage();

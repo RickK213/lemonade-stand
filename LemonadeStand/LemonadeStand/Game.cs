@@ -8,16 +8,17 @@ namespace LemonadeStand
 {
     public class Game
     {
+        //TO DO: Check to be sure all of these need to be public and maybe move appropriate stuff to other classes
         //member variables
         public Random random;
-        int numDaysInGame;
-        int numPlayers;
+        int numPlayersInGame;
         public Day day;
+        int numDaysInGame;
+        int currentDay;
         List<Player> players;
-        List<Supply> gameSupplies;
         Store store;
-        public decimal minTemperature;
-        public decimal maxTemperature;
+        public int minTemperature;
+        public int maxTemperature;
         decimal minNumberOfCustomers;
         decimal maxNumberOfCustomers;
         public int minLemonadePrice;
@@ -33,15 +34,12 @@ namespace LemonadeStand
         int forecastMultiplier;
         int priceMultiplier;
         int cupsPerPitcher;
-        int currentDay;
 
         //constructor
         public Game()
         {
             random = new Random();
             players = new List<Player>();
-            //TO DO: rewrite the line below. It's bad to create objects you don't plan on using
-            gameSupplies = new List<Supply>() { new PaperCup(), new Lemon(random), new CupOfSugar(), new IceCube() };
             store = new Store(random);
             store.SetDailyBundlePrices();
             minTemperature = 50;
@@ -70,7 +68,7 @@ namespace LemonadeStand
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("LET'S SET UP SOME GAME OPTIONS!\n");
             Console.ResetColor();
-            numPlayers = int.Parse(UI.GetValidUserOption("How many players?", new List<string>() { "1", "2" }));
+            numPlayersInGame = int.Parse(UI.GetValidUserOption("How many players?", new List<string>() { "1", "2" }));
             numDaysInGame = int.Parse(UI.GetValidUserOption("How many days would you like to play for?", new List<string>() { "7", "14", "30" }));
         }
 
@@ -84,77 +82,25 @@ namespace LemonadeStand
 
         void AddComputerPlayer()
         {
-            ComputerPlayer player = new ComputerPlayer(random);
+            //TO DO: figure out a way to avoid passing in the Store class to the computer player
+            ComputerPlayer player = new ComputerPlayer(random, store);
             players.Add(player);
         }
 
         void AddPlayersToGame()
         {
-
             AddHumanPlayer(1);
-
-            if ( numPlayers == 2 )
+            if ( numPlayersInGame == 2 )
             {
-                AddHumanPlayer(1);
+                AddHumanPlayer(2);
             }
             else
             {
                 AddComputerPlayer();
             }
-
-
-            for (int i=0; i<numPlayers; i++)
-            {
-                Console.WriteLine();
-            }
         }
 
-        //void AddBundleToPlayerInventory(Player player, SupplyBundle supplyBundle)
-        //{
-        //    player.money = Math.Round((player.money - supplyBundle.price), 2);
-        //    player.dailyExpenses = Math.Round((player.dailyExpenses + supplyBundle.price), 2);
-        //    player.totalExpenses = Math.Round((player.totalExpenses + supplyBundle.price), 2);
-        //    for (int i=0; i<supplyBundle.quantity; i++)
-        //    {
-        //        switch(supplyBundle.supply.name)
-        //        {
-        //            case "Paper Cup":
-        //                player.inventory.paperCups.Add(supplyBundle.supply);
-        //                break;
-        //            case "Lemon":
-        //                player.inventory.lemons.Add(new Lemon(random) );
-        //                break;
-        //            case "Cup of Sugar":
-        //                player.inventory.cupsOfSugar.Add(supplyBundle.supply);
-        //                break;
-        //            case "Ice Cube":
-        //                player.inventory.iceCubes.Add(supplyBundle.supply);
-        //                break;
-        //        }
-        //    }
-        //}
-
-        //double GetCheapestBundle(Supply supply)
-        //{
-        //    List<double> bundlePrices = new List<double>();
-        //    bundlePrices.Add(supply.bundle1.price);
-        //    bundlePrices.Sort();
-        //    return bundlePrices[0];
-        //}
-
-        //double GetCheapestSupplyBundle()
-        //{
-        //    List<double> cheapestBundles = new List<double>();
-        //    foreach ( Supply supply in gameSupplies )
-        //    {
-        //        double cheapestBundle = GetCheapestBundle(supply);
-        //        cheapestBundles.Add(cheapestBundle);
-        //    }
-        //    cheapestBundles.Sort();
-        //    return cheapestBundles[0];
-        //}
-
-        decimal AdjustMinBasedOnTemp(decimal dailyMinNumberOfCustomers, decimal numberOfVariableBreaks)
+        decimal AdjustMinNumberOfCustomersBasedOnTemp(decimal dailyMinNumberOfCustomers, decimal numberOfVariableBreaks)
         {
             decimal temperatureSpan = (maxTemperature - minTemperature) / numberOfVariableBreaks;
             if ((day.weather.actualHighTemp >= minTemperature + temperatureSpan * 2) && (day.weather.actualHighTemp < minTemperature + temperatureSpan * 3))
@@ -169,14 +115,14 @@ namespace LemonadeStand
             return dailyMinNumberOfCustomers;
         }
 
-        decimal AdjustMinBasedOnPrice(decimal dailyMinNumberOfCustomers, decimal numberOfVariableBreaks, Player player)
+        decimal AdjustMinNumberOfCustomersBasedOnPrice(decimal dailyMinNumberOfCustomers, decimal numberOfVariableBreaks, int pricePerCup)
         {
             decimal priceSpan = (maxLemonadePrice - minLemonadePrice) / numberOfVariableBreaks;
-            if ((player.recipe.pricePerCup >= minLemonadePrice) && (player.recipe.pricePerCup < minLemonadePrice + priceSpan))
+            if ((pricePerCup >= minLemonadePrice) && (pricePerCup < minLemonadePrice + priceSpan))
             {
                 dailyMinNumberOfCustomers += priceMultiplier * 2;
             }
-            else if ( (player.recipe.pricePerCup >= minLemonadePrice + priceSpan) && (player.recipe.pricePerCup < minLemonadePrice + priceSpan*2) )
+            else if ( (pricePerCup >= minLemonadePrice + priceSpan) && (pricePerCup < minLemonadePrice + priceSpan*2) )
             {
                 dailyMinNumberOfCustomers += priceMultiplier;
             }
@@ -184,14 +130,14 @@ namespace LemonadeStand
             return dailyMinNumberOfCustomers;
         }
 
-        decimal AdjustMinBasedOnForecast(decimal dailyMinNumberOfCustomers)
+        decimal AdjustMinNumberOfCustomersBasedOnPrecipitation(decimal dailyMinNumberOfCustomers)
         {
 
-            if ( day.weather.actualForecast == "Overcast" )
+            if ( day.weather.actualPrecipitation == "Overcast" )
             {
                 dailyMinNumberOfCustomers += forecastMultiplier;
             }
-            else if ( day.weather.actualForecast == "Sunny & Clear" )
+            else if ( day.weather.actualPrecipitation == "Sunny & Clear" )
             {
                 dailyMinNumberOfCustomers += forecastMultiplier * 2;
             }
@@ -199,7 +145,7 @@ namespace LemonadeStand
             return dailyMinNumberOfCustomers;
         }
 
-        decimal AdjustMaxBasedOnTemp(decimal dailyMaxNumberOfCustomers, decimal numberOfVariableBreaks)
+        decimal AdjustMaxNumberOfCustomersBasedOnTemp(decimal dailyMaxNumberOfCustomers, decimal numberOfVariableBreaks)
         {
             decimal temperatureSpan = (maxTemperature - minTemperature) / numberOfVariableBreaks;
             if (day.weather.actualHighTemp < minTemperature + temperatureSpan)
@@ -214,14 +160,14 @@ namespace LemonadeStand
             return dailyMaxNumberOfCustomers;
         }
 
-        decimal AdjustMaxBasedOnPrice(decimal dailyMaxNumberOfCustomers, decimal numberOfVariableBreaks, Player player)
+        decimal AdjustMaxNumberOfCustomersBasedOnPrice(decimal dailyMaxNumberOfCustomers, decimal numberOfVariableBreaks, int pricePerCup)
         {
             decimal priceSpan = (maxLemonadePrice - minLemonadePrice) / numberOfVariableBreaks;
-            if ((decimal)player.recipe.pricePerCup > minLemonadePrice + priceSpan * 3)
+            if ((decimal)pricePerCup > minLemonadePrice + priceSpan * 3)
             {
                 dailyMaxNumberOfCustomers -= priceMultiplier * 2;
             }
-            else if ( (player.recipe.pricePerCup >= minLemonadePrice + priceSpan * 2) && (player.recipe.pricePerCup <= minLemonadePrice + priceSpan * 3)  )
+            else if ( (pricePerCup >= minLemonadePrice + priceSpan * 2) && (pricePerCup <= minLemonadePrice + priceSpan * 3)  )
             {
                 dailyMaxNumberOfCustomers -= priceMultiplier;
             }
@@ -229,14 +175,14 @@ namespace LemonadeStand
             return dailyMaxNumberOfCustomers;
         }
 
-        decimal AdjustMaxBasedOnForecast(decimal dailyMaxNumberOfCustomers)
+        decimal AdjustMaxNumberOfCustomersBasedOnPrecipitation(decimal dailyMaxNumberOfCustomers)
         {
 
-            if (day.weather.actualForecast == "Cloudy")
+            if (day.weather.actualPrecipitation == "Cloudy")
             {
                 dailyMaxNumberOfCustomers -= forecastMultiplier;
             }
-            else if (day.weather.actualForecast == "Rainy")
+            else if (day.weather.actualPrecipitation == "Rainy")
             {
                 dailyMaxNumberOfCustomers -= forecastMultiplier * 2;
             }
@@ -244,53 +190,54 @@ namespace LemonadeStand
             return dailyMaxNumberOfCustomers;
         }
 
-        int GetNumberOfCustomers(Player player)
+        int GetNumberOfCustomers(int pricePerCup)
         {
             //TO DO: add in player popularity as a determining factor for number of customers
             decimal dailyMinNumberOfCustomers = minNumberOfCustomers;
             decimal dailyMaxNumberOfCustomers = maxNumberOfCustomers;
 
-            dailyMinNumberOfCustomers = AdjustMinBasedOnTemp(dailyMinNumberOfCustomers, numberOfVariableBreaks);
-            dailyMaxNumberOfCustomers = AdjustMaxBasedOnTemp(dailyMaxNumberOfCustomers, numberOfVariableBreaks);
+            dailyMinNumberOfCustomers = AdjustMinNumberOfCustomersBasedOnTemp(dailyMinNumberOfCustomers, numberOfVariableBreaks);
+            dailyMaxNumberOfCustomers = AdjustMaxNumberOfCustomersBasedOnTemp(dailyMaxNumberOfCustomers, numberOfVariableBreaks);
 
-            dailyMinNumberOfCustomers = AdjustMinBasedOnForecast(dailyMinNumberOfCustomers);
-            dailyMaxNumberOfCustomers = AdjustMaxBasedOnForecast(dailyMaxNumberOfCustomers);
+            dailyMinNumberOfCustomers = AdjustMinNumberOfCustomersBasedOnPrecipitation(dailyMinNumberOfCustomers);
+            dailyMaxNumberOfCustomers = AdjustMaxNumberOfCustomersBasedOnPrecipitation(dailyMaxNumberOfCustomers);
 
-            dailyMinNumberOfCustomers = AdjustMinBasedOnPrice(dailyMinNumberOfCustomers, numberOfVariableBreaks, player);
-            dailyMaxNumberOfCustomers = AdjustMaxBasedOnPrice(dailyMaxNumberOfCustomers, numberOfVariableBreaks, player);
+            dailyMinNumberOfCustomers = AdjustMinNumberOfCustomersBasedOnPrice(dailyMinNumberOfCustomers, numberOfVariableBreaks, pricePerCup);
+            dailyMaxNumberOfCustomers = AdjustMaxNumberOfCustomersBasedOnPrice(dailyMaxNumberOfCustomers, numberOfVariableBreaks, pricePerCup);
 
             return random.Next(Decimal.ToInt32(dailyMinNumberOfCustomers), Decimal.ToInt32(dailyMaxNumberOfCustomers + 1));
         }
 
         void RunDailyLemonadeStand(Player player)
         {
-            List<Customer> customers = new List<Customer>();
-            int numberOfCustomers = GetNumberOfCustomers(player);
+            //TO DO: This is a super long method. Break up into helper methods!
             int numberOfPurchases = 0;
+            int numberOfCustomers = GetNumberOfCustomers(player.recipe.pricePerCup);
             bool isSoldOut = false;
-            for ( int i=0; i<numberOfCustomers; i++ )
+            List<Customer> customers = new List<Customer>();
+            for (int i = 0; i < numberOfCustomers; i++)
             {
-                customers.Add( new Customer(random) );
+                customers.Add(new Customer(random));
             }
-
-            foreach ( Customer customer in customers )
+            foreach (Customer customer in customers)
             {
                 isSoldOut = player.checkForSoldOut(cupsPerPitcher);
-                if (!isSoldOut) {
+                if (!isSoldOut)
+                {
                     if (customer.MakesPurchase(minLemonadePrice, maxLemonadePrice, minTemperature, maxTemperature, day.weather.actualHighTemp, player.recipe.pricePerCup))
                     {
                         numberOfPurchases++;
                         double moneyMade = (double)Decimal.Divide(player.recipe.pricePerCup, 100);
-                        player.money += moneyMade;
-                        player.dailyIncome += moneyMade;
-                        player.totalIncome += moneyMade;
+                        player.moneyAvailable = Math.Round((player.moneyAvailable + moneyMade), 2);
+                        player.dailyIncome = Math.Round((player.dailyIncome + moneyMade), 2);
+                        player.totalIncome = Math.Round((player.totalIncome + moneyMade), 2);
 
-                        int lemonsUsed = player.recipe.lemonsPerPitcher / cupsPerPitcher;
+                        int lemonsUsed = Decimal.ToInt32(Decimal.Divide(player.recipe.lemonsPerPitcher, cupsPerPitcher));
                         player.inventory.lemons.RemoveRange(0, lemonsUsed);
 
                         player.inventory.paperCups.RemoveAt(0);
 
-                        int cupsOfSugarUsed = player.recipe.sugarPerPitcher / cupsPerPitcher;
+                        int cupsOfSugarUsed = Decimal.ToInt32(Decimal.Divide(player.recipe.sugarPerPitcher, cupsPerPitcher));
                         player.inventory.cupsOfSugar.RemoveRange(0, cupsOfSugarUsed);
 
                         int iceCubesUsed = player.recipe.icePerCup;
@@ -331,6 +278,7 @@ namespace LemonadeStand
             {
                 cupsOfSugarLost = player.inventory.cupsOfSugar.Count;
                 player.inventory.cupsOfSugar.Clear();
+                player.notEnoughSugar = true;
             }
 
             UI.DisplayDailyInventoryReport(numberOfIceCubesLost, numberOfLemonsLost, cupsOfSugarLost, currentDay, player, isSoldOut);
@@ -360,10 +308,10 @@ namespace LemonadeStand
                 {
                     player.dailyIncome = 0;
                     player.dailyExpenses = 0;
+                    player.notEnoughIce = true;
                     double cheapestSupplyBundle = store.GetCheapestSupplyBundlePrice();
                     player.PurchaseInventory(cheapestSupplyBundle, currentDay, day, store);
                     player.SetRecipe(currentDay, day, this);
-                    //SetPlayerRecipe(currentDay, day);
                     RunDailyLemonadeStand(player);
                 }
             }

@@ -11,17 +11,17 @@ namespace LemonadeStand
         //member variables
         Random random;
 
-        List<SupplyBundle> paperCupBundles;
-        List<SupplyBundle> lemonBundles;
-        List<SupplyBundle> sugarBundles;
-        List<SupplyBundle> iceCubeBundles;
+        public List<SupplyBundle> paperCupBundles;
+        public List<SupplyBundle> lemonBundles;
+        public List<SupplyBundle> sugarBundles;
+        public List<SupplyBundle> iceCubeBundles;
 
         List<int> paperCupQuantities;
         List<int> lemonQuantities;
         List<int> sugarQuantities;
         List<int> iceCubeQuantities;
 
-        public List<string> bundleContents;
+        public List<string> bundleTypes;
 
         int minPaperCupPrice = 20;
         int maxPaperCupPrice = 40;
@@ -51,93 +51,39 @@ namespace LemonadeStand
             sugarBundles = new List<SupplyBundle>();
             iceCubeBundles = new List<SupplyBundle>();
 
-            bundleContents = new List<string>() { "Paper Cups", "Lemons", "Cups of Sugar", "Ice Cubes" };
+            bundleTypes = new List<string>() { "Paper Cups", "Lemons", "Cups of Sugar", "Ice Cubes" };
 
         }
 
         //member methods
 
-        public void SetDailyBundlePrices()
+        void SetBundlePrice(List<int> bundleQuantities, List<SupplyBundle> supplyBundleList, int minSupplyPrice, int maxSupplyPrice, int typeIndex)
         {
-            
-            //TO DO: these foreach loops are all similar...write a method?
-            foreach (int quantity in paperCupQuantities)
+            foreach (int quantity in bundleQuantities)
             {
-                decimal paperCupUnitPrice = Decimal.Divide(random.Next(minPaperCupPrice, maxPaperCupPrice + 1), unitDivider);
-                double paperCupBundlePrice = Math.Round((double)(paperCupUnitPrice * quantity), 2);
-                SupplyBundle supplyBundle = new SupplyBundle(quantity, paperCupBundlePrice, bundleContents[0]);
-                paperCupBundles.Add(supplyBundle);
-            }
-
-            foreach (int quantity in lemonQuantities)
-            {
-                decimal lemonUnitPrice = Decimal.Divide(random.Next(minLemonPrice, maxLemonPrice + 1), unitDivider);
-                double lemonBundlePrice = Math.Round((double)(lemonUnitPrice * quantity), 2);
-                lemonBundles.Add(new SupplyBundle(quantity, lemonBundlePrice, bundleContents[1]));
-            }
-
-            foreach (int quantity in sugarQuantities)
-            {
-                decimal sugarUnitPrice = Decimal.Divide(random.Next(minSugarPrice, maxSugarPrice + 1), unitDivider);
-                double sugarBundlePrice = Math.Round((double)(sugarUnitPrice * quantity), 2);
-                sugarBundles.Add(new SupplyBundle(quantity, sugarBundlePrice, bundleContents[2]));
-            }
-
-            foreach (int quantity in iceCubeQuantities)
-            {
-                decimal iceCubeUnitPrice = Decimal.Divide(random.Next(minIceCubePrice, maxIceCubePrice + 1), unitDivider);
-                double iceCubeBundlePrice = Math.Round((double)(iceCubeUnitPrice * quantity), 2);
-                iceCubeBundles.Add(new SupplyBundle(quantity, iceCubeBundlePrice, bundleContents[3]));
+                decimal unitPrice = Decimal.Divide(random.Next(minSupplyPrice, maxSupplyPrice + 1), unitDivider);
+                double bundlePrice = Math.Round((double)(Decimal.Multiply(unitPrice, quantity)), 2);
+                SupplyBundle supplyBundle = new SupplyBundle(quantity, bundlePrice, bundleTypes[typeIndex]);
+                supplyBundleList.Add(supplyBundle);
             }
         }
 
-
-        //public static SupplyBundle GetSupplyBundle(int supplyBundleChoice, Player player, Random random, Store store)
-        //{
-        //    SupplyBundle chosenBundle;
-
-        //    string supplyContents = store.bundleContents[supplyBundleChoice-1];
-
-        //    List < SupplyBundle > = store.GetSupplyBundleList(supplyContents);
-
-        //    DisplayPurchaseOptions(supplyContents, player.money);
-
-        //    int bundleSelection = int.Parse(UI.GetValidUserOption("", new List<string>() { "1", "2", "3" }));
-
-        //    if ( bundleSelection == 1 )
-        //    {
-        //        chosenBundle = supply.bundle1;
-        //    }
-        //    else if (bundleSelection == 2)
-        //    {
-        //        chosenBundle = supply.bundle2;
-        //    }
-        //    else
-        //    {
-        //        chosenBundle = supply.bundle3;
-        //    }
-
-        //    if (player.money<chosenBundle.price)
-        //    {
-        //        Console.ForegroundColor = ConsoleColor.Red;
-        //        Console.WriteLine("Sorry, you don't have enough money to make this purchase.");
-        //        Console.ResetColor();
-        //        GetAnyKeyToContinue("continue", false);
-        //        return GetSupplyBundle(supplyBundleChoice, player, random);
-        //    }
-
-        //    return chosenBundle;
-
-        //}
+        public void SetDailyBundlePrices()
+        {
+            SetBundlePrice(paperCupQuantities, paperCupBundles, minPaperCupPrice, maxPaperCupPrice, 0);
+            SetBundlePrice(lemonQuantities, lemonBundles, minLemonPrice, maxLemonPrice, 1);
+            SetBundlePrice(sugarQuantities, sugarBundles, minSugarPrice, maxSugarPrice, 2);
+            SetBundlePrice(iceCubeQuantities, iceCubeBundles, minIceCubePrice, maxIceCubePrice, 3);
+        }
 
         public string getBundleMenuInstructions()
         {
             string bundleMenuInstructions = "";
-            for (int i = 0; i < bundleContents.Count; i++)
+            for (int i = 0; i < bundleTypes.Count; i++)
             {
-                bundleMenuInstructions += (i + 1) + ": Buy " + bundleContents[i] + "\n";
+                bundleMenuInstructions += (i + 1) + ": Buy " + bundleTypes[i] + "\n";
             }
-            bundleMenuInstructions += (bundleContents.Count + 1) + ": Done purchasing - Set my recipe!\n";
+            bundleMenuInstructions += (bundleTypes.Count + 1) + ": Done purchasing - Set my recipe!\n";
 
             return bundleMenuInstructions;
 
@@ -146,18 +92,18 @@ namespace LemonadeStand
         public List<string> getBundleMenuInputOptions()
         {
             List<string> bundleMenuInputOptions = new List<string>();
-            for (int i = 0; i < bundleContents.Count; i++)
+            for (int i = 0; i < bundleTypes.Count; i++)
             {
                 bundleMenuInputOptions.Add((i + 1).ToString());
             }
-            bundleMenuInputOptions.Add((bundleContents.Count + 1).ToString());
+            bundleMenuInputOptions.Add((bundleTypes.Count + 1).ToString());
             return bundleMenuInputOptions;
         }
 
-        public SupplyBundle GetSupplyBundle(string bundleContents, double playerMoney)
+        public SupplyBundle GetSupplyBundle(string typeOfBundle, double playerMoney)
         {
             List<SupplyBundle> chosenBundleList = new List<SupplyBundle>();
-            switch (bundleContents)
+            switch (typeOfBundle)
             {
                 case "Paper Cups":
                     chosenBundleList = paperCupBundles;
@@ -187,44 +133,28 @@ namespace LemonadeStand
 
         }
 
+        public double GetCheapestBundlePrice(List<SupplyBundle> bundleList)
+        {
+            double cheapestBundlePrice = bundleList[0].price;
+            foreach (SupplyBundle bundle in bundleList)
+            {
+                if (bundle.price < cheapestBundlePrice)
+                {
+                    cheapestBundlePrice = bundle.price;
+                }
+            }
+            return cheapestBundlePrice;
+        }
+
         public double GetCheapestSupplyBundlePrice()
         {
-            double cheapestSupplyBundlePrice = paperCupBundles[0].price;
-
-            //TO DO: these foreach loops are all similar...write a method?
-            foreach (SupplyBundle paperCupBundle in paperCupBundles)
-            {
-                if (paperCupBundle.price < cheapestSupplyBundlePrice)
-                {
-                    cheapestSupplyBundlePrice = paperCupBundle.price;
-                }
-            }
-
-            foreach (SupplyBundle lemonBundle in lemonBundles)
-            {
-                if (lemonBundle.price < cheapestSupplyBundlePrice)
-                {
-                    cheapestSupplyBundlePrice = lemonBundle.price;
-                }
-            }
-
-            foreach (SupplyBundle sugarBundle in sugarBundles)
-            {
-                if (sugarBundle.price < cheapestSupplyBundlePrice)
-                {
-                    cheapestSupplyBundlePrice = sugarBundle.price;
-                }
-            }
-
-            foreach (SupplyBundle iceCubeBundle in iceCubeBundles)
-            {
-                if (iceCubeBundle.price < cheapestSupplyBundlePrice)
-                {
-                    cheapestSupplyBundlePrice = iceCubeBundle.price;
-                }
-            }
-
-            return cheapestSupplyBundlePrice;
+            List<double> cheapestBundlePrices = new List<double>();
+            cheapestBundlePrices.Add(GetCheapestBundlePrice(paperCupBundles));
+            cheapestBundlePrices.Add(GetCheapestBundlePrice(lemonBundles));
+            cheapestBundlePrices.Add(GetCheapestBundlePrice(sugarBundles));
+            cheapestBundlePrices.Add(GetCheapestBundlePrice(iceCubeBundles));
+            cheapestBundlePrices.Sort();
+            return cheapestBundlePrices[0];
         }
 
     }

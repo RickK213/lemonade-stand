@@ -11,10 +11,10 @@ namespace LemonadeStand
         //member variables
         public int predictedHighTemp;
         public int actualHighTemp;
-        public List<string> forecastVariables = new List<string>() { "Sunny & Clear", "Overcast", "Cloudy", "Rainy" };
-        public string predictedForecast;
-        public string actualForecast;
-        int predictedForecastIndex;
+        public List<string> precipitationVariables = new List<string>() { "Sunny & Clear", "Overcast", "Cloudy", "Rainy" };
+        public string predictedPrecipitation;
+        public string actualPrecipitation;
+        int predictedPrecipitationIndex;
         Random random;
         
         //constructor
@@ -23,8 +23,8 @@ namespace LemonadeStand
         {
             this.random = random;
             predictedHighTemp = random.Next(Decimal.ToInt32(minTemperature), Decimal.ToInt32(maxTemperature+1));
-            predictedForecastIndex = random.Next(0,forecastVariables.Count);
-            predictedForecast = forecastVariables[predictedForecastIndex];
+            predictedPrecipitationIndex = random.Next(0,precipitationVariables.Count);
+            predictedPrecipitation = precipitationVariables[predictedPrecipitationIndex];
         }
 
         //member methods
@@ -33,13 +33,14 @@ namespace LemonadeStand
             int temperatureDifference = random.Next(-10,11);
             actualHighTemp = predictedHighTemp + temperatureDifference;
 
-            int forecastIndexDifference = random.Next(0,forecastVariables.Count);
-            int actualForecastIndex = predictedForecastIndex + forecastIndexDifference;
-            if (actualForecastIndex > forecastVariables.Count-1)
+            //TO DO: Rewrite below so that precipitation moves up or down by 1 in the index...more realistic
+            int forecastIndexDifference = random.Next(0,precipitationVariables.Count);
+            int actualForecastIndex = predictedPrecipitationIndex + forecastIndexDifference;
+            if (actualForecastIndex > precipitationVariables.Count-1)
             {
-                actualForecastIndex -= forecastVariables.Count; 
+                actualForecastIndex -= precipitationVariables.Count; 
             }
-            actualForecast = forecastVariables[actualForecastIndex];
+            actualPrecipitation = precipitationVariables[actualForecastIndex];
         }
 
     }

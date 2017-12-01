@@ -11,14 +11,14 @@ namespace LemonadeStand
         //member variables
         public int quantity;
         public double price;
-        public string contents;
+        public string typeOfSupply;
 
         //constructor
-        public SupplyBundle(int quantity, double price, string contents)
+        public SupplyBundle(int quantity, double price, string typeOfSupply)
         {
             this.quantity = quantity;
             this.price = price;
-            this.contents = contents;
+            this.typeOfSupply = typeOfSupply;
         }
 
         //member methods

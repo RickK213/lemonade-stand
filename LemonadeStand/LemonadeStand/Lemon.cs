@@ -16,7 +16,7 @@ namespace LemonadeStand
         {
             name = "Lemon";
             pluralName = "Lemons";
-            daysUntilSpoiled = random.Next(2, 6);
+            daysUntilSpoiled = random.Next(2,6);
         }
 
         //member methods

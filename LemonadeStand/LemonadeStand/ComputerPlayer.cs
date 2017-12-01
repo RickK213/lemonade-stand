@@ -9,82 +9,79 @@ namespace LemonadeStand
     class ComputerPlayer : Player
     {
         //member variables
+        Store store;
 
         //constructor
-        public ComputerPlayer(Random random)
+        //TO DO: Don't pass in the whole store...just find out what you actually need from it.
+        public ComputerPlayer(Random random, Store store)
         {
             name = "Lemonator 5000";
+            this.store = store;
+            this.random = random;
         }
 
         //member methods
-
-        SupplyBundle getRandomSupplyBundle(string supplyName)
+        void PurchaseSupplyBundle(List<Supply> supplyInventory, List<SupplyBundle> supplyBundle, string typeOfSupply, bool notEnoughSupply)
         {
-
-            SupplyBundle chosenBundle;
-
-            Supply supply = new Supply();
-
-            //TO DO: Figure out a better way to do the below stuff. It's bad to create objects you don't need.
-            switch (supplyName)
+            if (notEnoughSupply)
             {
-                case "Paper Cup":
-                    supply = new PaperCup();
-                    break;
-                case "Lemon":
-                    supply = new Lemon(random);
-                    break;
-                case "Cup of Sugar":
-                    supply = new CupOfSugar();
-                    break;
-                case "Ice Cube":
-                    supply = new IceCube();
-                    break;
-                default:
-                    break;
+                double cheapestBundlePrice = store.GetCheapestBundlePrice(supplyBundle);
+                if (moneyAvailable > cheapestBundlePrice)
+                {
+                    bool purchaseMade = false;
+                    while (!purchaseMade)
+                    {
+                        //TO DO: figure out why the commented out line below doesn't work! I keep getting and "index out of range" error
+                        //int selectedOption = random.Next(0, (supplyBundle.Count + 1));
+                        int selectedOption = random.Next(0, (supplyBundle.Count));
+                        if (moneyAvailable > supplyBundle[selectedOption].price)
+                        {
+                            moneyAvailable = Math.Round((moneyAvailable - supplyBundle[selectedOption].price), 2);
+                            dailyExpenses = Math.Round((dailyExpenses + supplyBundle[selectedOption].price), 2);
+                            totalExpenses = Math.Round((totalExpenses + supplyBundle[selectedOption].price), 2);
+                            purchaseMade = true;
+                            for (int i = 0; i < supplyBundle[selectedOption].quantity; i++)
+                            {
+                                switch (typeOfSupply)
+                                {
+                                    case "Paper Cups":
+                                        supplyInventory.Add(new PaperCup());
+                                        break;
+                                    case "Lemons":
+                                        supplyInventory.Add(new Lemon(random));
+                                        break;
+                                    case "Cups of Sugar":
+                                        supplyInventory.Add(new CupOfSugar());
+                                        break;
+                                    case "Ice Cubes":
+                                        supplyInventory.Add(new IceCube());
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
-
-            int bundleSelection = random.Next(1,4);
-
-            if (bundleSelection == 1)
-            {
-                //chosenBundle = supply.bundle1;
-            }
-            else if (bundleSelection == 2)
-            {
-                //chosenBundle = supply.bundle2;
-            }
-            else
-            {
-                //chosenBundle = supply.bundle3;
-            }
-
-            //if (money < chosenBundle.price)
-            //{
-            //    return getRandomSupplyBundle(supplyName);
-            //}
-
-            //return chosenBundle;
-            return new SupplyBundle(1,1.11,"blah"); //placeholder
-
-
-        }
-
-        double getCheapestBundle(string supplyName)
-        {
-
-
-            return 0.00;
         }
 
         public override void PurchaseInventory(double cheapestSupplyBundle, int currentDay, Day day, Store store)
         {
-
+            PurchaseSupplyBundle(inventory.paperCups, store.paperCupBundles, store.paperCupBundles[0].typeOfSupply, notEnoughCups);
+            PurchaseSupplyBundle(inventory.lemons, store.lemonBundles, store.lemonBundles[0].typeOfSupply, notEnoughLemons);
+            PurchaseSupplyBundle(inventory.cupsOfSugar, store.sugarBundles, store.sugarBundles[0].typeOfSupply, notEnoughSugar);
+            PurchaseSupplyBundle(inventory.iceCubes, store.iceCubeBundles, store.iceCubeBundles[0].typeOfSupply, notEnoughIce);
+            UI.DisplayPlayerInventory(this, currentDay, day);
+            UI.GetAnyKeyToContinue("continue", true);
         }
 
         public override void SetRecipe(int currentDay, Day day, Game game)
         {
-
+            recipe.pricePerCup = random.Next(game.minLemonadePrice, game.maxLemonadePrice);
+            recipe.lemonsPerPitcher = random.Next(Decimal.ToInt32(game.minLemonsPerPitcher), Decimal.ToInt32(game.maxLemonsPerPitcher));
+            recipe.sugarPerPitcher = random.Next(Decimal.ToInt32(game.minSugarPerPitcher), Decimal.ToInt32(game.maxSugarPerPitcher));
+            recipe.icePerCup = random.Next(Decimal.ToInt32(game.minIcePerCup), Decimal.ToInt32(game.maxIcePerCup));
+            UI.DisplayPlayerRecipe(this, currentDay, day);
+            UI.GetAnyKeyToContinue("continue", true);
         }
     }
 }
